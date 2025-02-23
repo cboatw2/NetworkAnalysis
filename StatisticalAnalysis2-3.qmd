@@ -248,3 +248,24 @@ A *directed acyclic graph (DAG)* is an important generalization of a tree. It is
 # is.dag (dg) Deprecated error
 is_dag (dg)
 ```
+
+This can be a useful computation algorithms to design on because it is efficient and takes advantage of the near-tree-like structure.
+
+*Bipartite* graphs contain 2 sets of vertices which can be disjointed (V<sub>1<sub>, V<sub>2<sub>), but where edges have an endpoint in V<sub>1<sub> and an endpoint in V<sub>2<sub>.
+
+The bipartite graph below shows relationship between actors and movies:
+
+```{r}
+g.bip <- graph_from_literal(actor1:actor2:actor3,
+   movie1:movie2, actor1:actor2 - movie1,
+   actor2:actor3 - movie2)
+V(g.bip)$type <- grepl("^movie", V(g.bip)$name)
+print_all(g.bip, v=T)
+```
+
+```{r}
+proj <- bipartite_projection(g.bip)
+print_all(proj[[1]])
+
+print_all(proj[[2]])
+```
