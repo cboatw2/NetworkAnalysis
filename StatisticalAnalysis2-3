@@ -1,0 +1,13 @@
+---
+title: "Statistical Analysis Chapters 2-3"
+format: html
+---
+
+A graph is a mathematical representation of V(vertices) = nodes and E(edges) = links; can be directed or undirected
+
+The R package igraph was developed specifically to handle larger network graphing projects with multiple layers of data
+
+```
+install.packages("devtools")
+install.packages("sand")
+```
