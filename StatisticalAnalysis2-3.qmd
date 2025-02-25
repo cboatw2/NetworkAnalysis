@@ -2,6 +2,8 @@
 title: "Statistical Analysis Chapters 2-3"
 format: html
 ---
+Chapter 2 Manipulating Network Data
+
 2.2 Creating Network Graphs
 
 A graph is a mathematical representation of V(vertices) = nodes and E(edges) = links; can be directed or undirected
@@ -269,3 +271,141 @@ print_all(proj[[1]])
 
 print_all(proj[[2]])
 ```
+
+Chapter 3 Visualizing Network Data
+
+*Graph drawing* and *graph visualization* are fields concerned with the techniques of visualization combining mathematics, human aesthetics and algorithms. Drawing conventions, aesthetics and constrains form parameters for visualization and prevent totally randomized graphs which are often unreadable.
+
+In igraph, plot calls a variety of algorithms which produce an assortment of visualizations.
+
+3.3 Graph Layouts
+
+Layout defined: placement of vertices and edges in space
+
+Create 2 networks: first a lattice (5x5x5) and the other a network of blogs related to AIDS in a 3-day period in Aug 2005: 
+
+```{r}
+library(sand)
+g.l <- make_lattice(c(5, 5, 5))
+data(aidsblog)
+summary(aidsblog)
+#Returned message: 
+#> summary(aidsblog)
+#This graph was created by an old(er) igraph version.
+#ℹ Call `igraph::upgrade_graph()` on it to use with the current igraph version.
+#For now we convert it on the fly...
+#IGRAPH 3e85e7e D--- 146 187 -- 
+```
+
+*Circular layout* is the simplest. Shown below on lattice and blog networks.
+
+```{r}
+igraph_options(vertex.size=3, vertex.label=NA,
+   edge.arrow.size=0.5)
+par(mfrow=c(1, 2))
+plot(g.l, layout=layout_in_circle)
+title("5x5x5 Lattice")
+plot(aidsblog, layout=layout_in_circle)
+title("Blog Network")
+```
+
+It is important to order the vertices otherwise the lattice would look like the blog network. 
+
+The earliest proposal for structuring a graph with an analogy to physical forces is the *spring-embedder* method which associates vertices with balls and edges with springs and uses attractive and repulsive forces. The Fruchterman and Reingold method is a commonly used spring-embedder type:
+
+```{r}
+plot(g.l,layout=layout_with_fr)
+title("5x5x5 Lattice")
+plot(aidsblog,layout=layout_with_fr)
+title("Blog Network")
+```
+
+A graph, also based on energy, but placing vertices at their most relax and therefore most visually pleasing state, is called an *energy-placement* method.
+
+Social network literature has a long history of utilizing multidensional scaling (MDS) which is a type of the energy-placement method. The Kamada and Kawai variant is used below and the output is similar to the Fruchterman-Reingold. 
+
+```{r}
+plot(g.l, layout=layout_with_kk)
+title("5x5x5 Lattice")
+plot(aidsblog, layout=layout_with_kk)
+title("Blog Network")
+```
+
+The apparent structure of a graph may or may not be apparent depending on the layout:
+
+```{r}
+g.tree <- graph_from_literal(1-+2,1-+3,1-+4,2-+5,2-+6,
+                         2-+7,3-+8,3-+9,4-+10)
+par(mfrow=c(1, 3))
+igraph_options(vertex.size=30, edge.arrow.size=0.5,
+   vertex.label=NULL)
+plot(g.tree, layout=layout_in_circle)
+plot(g.tree, layout=layout_as_tree(g.tree, circular=T))
+plot(g.tree, layout=layout_as_tree)
+```
+
+In the circular layout (left) the tree is not apparent but when a radial (center) or layered (right) layout is utilized, the tree emerges.
+
+Visualization of the actor and movie bipartite graph in Chapter 2 using edges that run across rows or columns (like railroad tracks):
+
+```{r}
+plot(g.bip, layout= -layout_as_bipartite(g.bip)[,2:1], 
+   vertex.size=60, vertex.shape=ifelse(V(g.bip)$type, 
+      "rectangle", "circle"),
+   vertex.label.cex=1.75,
+   vertex.color=ifelse(V(g.bip)$type, "red", "cyan"))
+   ```
+
+3.4 Decorating Graph Layouts
+
+Incorporating relevant data into layouts by varying the characteristics of graph elements (ie: using color, shape, size  for vertices and edges). Example below shows decoration of the "Karate Club Network":
+
+```{r}
+library(igraphdata)
+data(karate)
+# Reproducible layout
+set.seed(42)
+l <- layout_with_kk(karate)
+# Plot undecorated first.
+igraph_options(vertex.size=10)
+par(mfrow=c(1,1))
+plot(karate, layout=l, vertex.label=V(karate), 
+   vertex.color=NA)
+# Now decorate, starting with labels.
+V(karate)$label <- sub("Actor ", "", V(karate)$name)
+# Two leaders get shapes different from club members.
+V(karate)$shape <- "circle"
+V(karate)[c("Mr Hi", "John A")]$shape <- "rectangle"
+# Differentiate two factions by color.
+V(karate)[Faction == 1]$color <- "red"
+V(karate)[Faction == 2]$color <- "dodgerblue"
+# Vertex area proportional to vertex strength
+# (i.e., total weight of incident edges).
+V(karate)$size <- 4*sqrt(strength(karate))
+V(karate)$size2 <- V(karate)$size * .5
+# Weight edges by number of common activities
+E(karate)$width <- E(karate)$weight
+# Color edges by within/between faction.
+F1 <- V(karate)[Faction==1]
+F2 <- V(karate)[Faction==2]
+E(karate)[ F1 %--% F1 ]$color <- "pink"
+E(karate)[ F2 %--% F2 ]$color <- "lightblue"
+E(karate)[ F1 %--% F2 ]$color <- "yellow"
+# Offset vertex labels for smaller points (default=0).
+V(karate)$label.dist <- 
+   ifelse(V(karate)$size >= 9.0, 0, 1.0)
+# Plot decorated graph, using same layout.
+plot(karate, layout=l)
+```
+
+Graph is shown undecorated first, then 
+   labeled, 
+   members vertices made rectangles and leaders vertices made into circles, 
+   faction 1 made red and faction 2 made blue, 
+   vertex sized by weight of incident edges and weight defined as common activities, 
+   edges colored based on their connection between and within factions, 
+   and vertex labels offset for smaller points for readability.
+A similar layout is shown in the Introduction on pg 4 of the Lazega's lawyer network
+
+3.5 Visualizaing Large Networks
+
