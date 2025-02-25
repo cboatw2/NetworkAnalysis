@@ -456,7 +456,7 @@ However, there are layout algorithms designed specifically for large networks. V
 
 Another large visualization method is the DrL which is available in igraph. It produces the following graph with the French political blog network:
 
-```{r}
+#```{r}
 set.seed(42)
 l <- layout_with_drl(fblog)
 plot(fblog, layout=l, vertex.size=5, vertex.label=NA)
@@ -464,7 +464,7 @@ plot(fblog, layout=l, vertex.size=5, vertex.label=NA)
 
 This produces a visualization which clusters the blogs according to political affiliation, even though that information was not included in the data. Because this clustering could already be inferred, it is sometimes helpful to replace the groups with single meta-vertices, a process called coarsening the graph.
 
-```{r}
+#```{r}
 fblog.c <- contract(fblog, party.nums)
 E(fblog.c)$weight <- 1
 fblog.c <- simplify(fblog.c)
