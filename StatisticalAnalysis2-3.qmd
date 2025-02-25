@@ -470,7 +470,7 @@ E(fblog.c)$weight <- 1
 fblog.c <- simplify(fblog.c)
 ```
 
-```{r}
+#```{r}
 party.size <- as.vector(table(V(fblog)$PolParty))
 plot(fblog.c, vertex.size=5*sqrt(party.size),
 vertex.label=party.names, vertex.color=colrs,
