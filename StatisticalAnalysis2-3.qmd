@@ -23,7 +23,7 @@ g <- graph_from_literal(1-2, 1-3, 2-3, 2-4, 3-5, 4-5,
                     4-6, 4-7, 5-6, 6-7)
 
 plot(g)
-````
+```
 
 This generates an undirected graph. It will also change shape and location of nodes every time it is rendered.
 
@@ -462,7 +462,7 @@ l <- layout_with_drl(fblog)
 plot(fblog, layout=l, vertex.size=5, vertex.label=NA)
 ```
 
-This produces a visualization which clusters the blogs according to political affiliation, even though that information was not included in the data. Because this clustering could already be inferred, it is sometimes helpful to replace the groups with single meta-vertices (called "coarsening" the graph). 
+This produces a visualization which clusters the blogs according to political affiliation, even though that information was not included in the data. Because this clustering could already be inferred, it is sometimes helpful to replace the groups with single meta-vertices, called coarsening the graph. 
 
 ```{r}
 fblog.c <- contract(fblog, party.nums)
@@ -471,9 +471,9 @@ fblog.c <- simplify(fblog.c)
 
 party.size <- as.vector(table(V(fblog)$PolParty))
 plot(fblog.c, vertex.size=5*sqrt(party.size),
-      vertex.label=party.names, vertex.color=colrs,
-      edge.width=sqrt(E(fblog.c)$weight),
-      vertex.label.dist=3.5, edge.arrow.size=0)
+vertex.label=party.names, vertex.color=colrs,
+edge.width=sqrt(E(fblog.c)$weight),
+vertex.label.dist=3.5, edge.arrow.size=0)
 ```
 
 This graph uses the numbers of edges between political groups to adjust the size of the vertices and edge thickness.
@@ -506,6 +506,5 @@ Pajek: Microsoft Windows environment
 Cytoscape: Java; specializes in biological networks
 
 Gephi: use rgexf to convert to gexf from igraph
-
 
 
