@@ -24,4 +24,87 @@ library(ndtv)
 #Begin by setting up a static network visualization
 
 #Import Static Network Data
-PHStaticEdges <- read.csv(TNAWR_StaticEdgelist.csv)
+#Edges List
+PHStaticEdges <- read.csv("/Users/crboatwright/Downloads/TNAWR_StaticEdgelist.csv")
+
+#Tutorial recommended using read.csv(file.choose()) to interactively choose file.
+#Supposed to produce a dialog box, but wasn't able to get it to work.
+#Dragged file into VS Code and then copied path into read.csv()
+
+#Import Static Vertex Atrribute List
+PHVertexAttributes <- read.csv("/Users/crboatwright/Downloads/TNAWR_VertexAttributes.csv",
+    stringsAsFactors = FALSE
+)
+
+# Make and visualize our static network
+thenetwork <- network(
+  PHStaticEdges,
+  vertex.attr = PHVertexAttributes,
+  vertex.attrnames = c("vertex.id", "name", "region"),
+  directed = FALSE,
+  bipartite = FALSE,
+  multiple = TRUE
+)
+plot(thenetwork)
+
+#Produced an error because we set multiple to FALSE but parallel edges exist.
+#Changed multiple to TRUE and a graph very similar to example was produced.
+
+#Repeat process with Dynamic data
+
+# Import Temporal Network Data
+PHDynamicNodes <- read.csv("/Users/crboatwright/Downloads/TNAWR_DynamicNodes.csv")
+PHDynamicEdges <- read.csv("/Users/crboatwright/Downloads/TNAWR_DynamicEdges.csv")
+
+# Make the temporal network
+dynamicCollabs <- networkDynamic(
+  thenetwork,
+  edge.spells = PHDynamicEdges,
+  vertex.spells = PHDynamicNodes
+)
+
+# Check the temporal network
+network.dynamic.check(dynamicCollabs)
+
+#All values returned TRUE so ok to proceed
+
+# Plot network dynamic object as a static image
+plot(dynamicCollabs)
+
+#Tutorial says it will produce graph similar to static, 
+#but mine was pretty dramatically different
+
+# Plot our dynamic network as a filmstrip
+filmstrip(dynamicCollabs, displaylabels = FALSE)
+
+#Got error tutorial said I would.
+#Says it can be ignored, but
+#in my code no filmstrip was produced
+
+# Calculate how to plot an animated version of the dynamic network
+compute.animation(
+  dynamicCollabs,
+  animation.mode = "kamadakawai",
+  slice.par = list(
+    start = 1260,
+    end = 1300,
+    interval = 1,
+    aggregate.dur = 20,
+    rule = "any"
+  )
+)
+
+# Render the animation and open it in a web brower
+render.d3movie(
+  dynamicCollabs,
+  displaylabels = FALSE,
+  # This slice function makes the labels work
+  vertex.tooltip = function(slice) {
+    paste(
+      "<b>Name:</b>", (slice %v% "name"),
+      "<br>",
+      "<b>Region:</b>", (slice %v% "region")
+    )
+  }
+)
+
