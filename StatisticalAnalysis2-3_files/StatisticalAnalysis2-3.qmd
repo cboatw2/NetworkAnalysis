@@ -2,6 +2,8 @@
 title: "Statistical Analysis Chapters 2-3"
 format: html
 ---
+Kolaczyk, Eric D, and Gábor Csárdi. Statistical Analysis of Network Data with R. 2014th ed. Vol. 65. New York, NY: Springer Nature, 2014. https://doi.org/10.1007/978-1-4939-0983-4.
+
 Chapter 2 Manipulating Network Data
 
 2.2 Creating Network Graphs
@@ -14,6 +16,8 @@ The R package igraph was developed specifically to handle larger network graphin
 install.packages("devtools")
 install.packages("sand")
 ```
+
+Entered Choice 71 for USA(TN)
 
 A small (aka: "toy") graph can be generated as using the graph.formula function:
 
@@ -405,6 +409,7 @@ Graph is shown undecorated first, then
    vertex sized by weight of incident edges and weight defined as common activities, 
    edges colored based on their connection between and within factions, 
    and vertex labels offset for smaller points for readability.
+
 A similar layout is shown in the Introduction on pg 4 of the Lazega's lawyer network:
 ```{r}
 library(sand)

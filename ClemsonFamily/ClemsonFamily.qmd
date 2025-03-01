@@ -1,5 +1,5 @@
 ---
-title: "ClemsonFamily"
+title: "Clemson Family"
 ---
 
 Woodland Cemetery, on the campus of Clemson University, was created by President Walter Riggs in 1922. Motivated in part by poor professor retention at Clemson Agricultural College, Riggs devised a plan to use land adjacent to the historic Calhoun family burial plot as a faculty and officer cemetery and their families.
@@ -9,4 +9,43 @@ The growth of Clemson through the 1950s as evidenced by the building of Memorial
 In order to explore the notion of Clemson Family, examining its existance and formation as a network of social currency, the eariest families buried in Woodland will be compared to those who lived in campus housing. 
 
 ![1943 Clemson University Atlas](images/1943%20Atlas%20(1).jpg)
+
+The following family names appear on the 1943 Clemson University Atlas:
+
+Henry
+Watkins
+Littlejohn
+Dargin
+Cook
+Cody
+Feely
+Bradley
+Neely
+Milford
+Bryan
+Lemaster
+Aull
+Hunter
+Earle
+Littlejohn
+McCollum
+Trively
+Anderson
+Burley
+Elmore
+Musser
+Cureton
+Rosencran
+Brock
+Harcombe
+Lindsay
+Carey
+Marshall
+Sharpe
+*Sirrine
+*Riggs
+*Tillman
+*Long
+
+*University buildings (not occupied by families)
 
