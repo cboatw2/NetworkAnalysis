@@ -43,7 +43,7 @@ thenetwork <- network(
   vertex.attrnames = c("vertex.id", "name", "region"),
   directed = FALSE,
   bipartite = FALSE,
-  multiple = TRUE
+  multiple = FALSE
 )
 plot(thenetwork)
 
@@ -94,6 +94,48 @@ compute.animation(
   )
 )
 
+# Specify the full path for the output file
+output_file <- "/Users/crboatwright/NetworkAnalysis/dynamic_network_animation.html"
+
+# Ensure the output directory exists
+output_dir <- dirname(output_file)
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+
+# Render the animation and save it to a file
+tryCatch({
+  render.d3movie(
+    dynamicCollabs,
+    filename = output_file,
+    displaylabels = FALSE,
+    # This slice function makes the labels work
+    vertex.tooltip = function(slice) {
+      paste(
+        "<b>Name:</b>", (slice %v% "name"),
+        "<br>",
+        "<b>Region:</b>", (slice %v% "region")
+      )
+    }
+  )
+}, error = function(e) {
+  cat("Error during render.d3movie: ", e$message, "\n")
+}, warning = function(w) {
+  cat("Warning during render.d3movie: ", w$message, "\n")
+})
+
+# Check if the file was created
+if (file.exists(output_file)) {
+  # Open the generated HTML file in the default web browser
+  browseURL(output_file)
+} else {
+  cat("Error: The file was not created.\n")
+}
+
+
+# Specify the full path for the output file
+output_file <- "/Users/crboatwright/NetworkAnalysis/dynamic_network_animation.html"
+
 # Render the animation and open it in a web brower
 render.d3movie(
   dynamicCollabs,
@@ -107,4 +149,49 @@ render.d3movie(
     )
   }
 )
+# Check if the file was created
+if (file.exists(output_file)) {
+  # Open the generated HTML file in the default web browser
+  browseURL(output_file)
+} else {
+  cat("Error: The file was not created.\n")
+}
 
+
+
+#Using other visualizations to examine data
+
+# Plot formation of edges over time
+plot(tEdgeFormation(dynamicCollabs, time.interval = .25))
+
+# Calculate and graph the rolling betweenness centralization of the network
+dynamicBetweenness <- tSnaStats(
+  dynamicCollabs,
+  snafun = "centralization",
+  start = 1260,
+  end = 1320,
+  time.interval = 1,
+  aggregate.dur = 20,
+  FUN = "betweenness"
+)
+plot(dynamicBetweenness)
+
+# Calculate and store the sizes of
+# forward and backward reachable sets for each node
+fwd_reach <- tReach(dynamicCollabs)
+bkwd_reach <- tReach(dynamicCollabs, direction = "bkwd")
+plot(fwd_reach, bkwd_reach)
+
+# Calculate and plot the forward reachable paths
+# of node number 3 (the Hospitaller Master)
+HospitallerFwdPath <- tPath(
+  dynamicCollabs,
+  v = 3,
+  direction = "fwd"
+)
+plotPaths(
+  dynamicCollabs,
+  HospitallerFwdPath,
+  displaylabels = FALSE,
+  vertex.col = "white"
+)

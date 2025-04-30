@@ -49,3 +49,5 @@ Sharpe
 
 *University buildings (not occupied by families)
 
+The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th Rick Owens, Clemson's preservation officer, found a map of Clemson created by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map became the central focus for this project and dataset.
+
