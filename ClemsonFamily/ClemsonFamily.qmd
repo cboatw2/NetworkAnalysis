@@ -63,6 +63,26 @@ Sharpe
 The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th Rick Owens, Clemson's preservation officer, found a map of Clemson created by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map became the central focus for this project and dataset.
 
 ```{r}
+#load nodes list (entire Airtable dataset converted to .csv)
 library(readr)
-data <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesList.csv")
+library(tidyverse)
+ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesList.csv")
+```
+
+```{r}
+#create edges based on shared Clemson department
+CFD_long <- ClemsonFamilyData %>%
+    separate_rows(ClemsonDepartment, sep = ",\\s*") #separates multi-select field
+
+#filter rows with missing data in ClemsonDepartment
+CFD_long <- CFD_long %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+#Join by ClemsonDepartment to identify relationships
+dept_edges <- CFD_long %>%
+    select(ID, ClemsonDepartment) %>%
+    inner_join(CFD_long, by = c("ClemsonDepartment")) %>% #identifies matching departments to create relationships
+    #filter(ID.x < ID.y) %>% #avoids duplicates created by making data long
+    transmute(from = ID.x, to = ID.y, type = "ClemsonDepartment")
+print(dept_edges)
 ```
