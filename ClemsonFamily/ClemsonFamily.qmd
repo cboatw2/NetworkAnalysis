@@ -66,23 +66,28 @@ The 1943 Atlas provided some notion of the correlation between families that liv
 #load nodes list (entire Airtable dataset converted to .csv)
 library(readr)
 library(tidyverse)
-ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesList.csv")
+ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer2.csv")
 ```
 
 ```{r}
 #create edges based on shared Clemson department
 CFD_long <- ClemsonFamilyData %>%
-    separate_rows(ClemsonDepartment, sep = ",\\s*") #separates multi-select field
-
-#filter rows with missing data in ClemsonDepartment
-CFD_long <- CFD_long %>%
-    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "") %>% #filter rows with missing data in ClemsonDepartment
+    separate_rows(ClemsonDepartment, sep = ",\\s*") #separates multi-select field    
 
 #Join by ClemsonDepartment to identify relationships
 dept_edges <- CFD_long %>%
     select(ID, ClemsonDepartment) %>%
     inner_join(CFD_long, by = c("ClemsonDepartment")) %>% #identifies matching departments to create relationships
-    #filter(ID.x < ID.y) %>% #avoids duplicates created by making data long
-    transmute(from = ID.x, to = ID.y, type = "ClemsonDepartment")
-print(dept_edges)
+    filter(ID.x < ID.y) %>% #avoids duplicates created by making data long
+    select(source = ID.x, target = ID.y, ClemsonDepartment) %>%
+    distinct()
+
+dept_edges_undirected <- dept_edges %>%
+    rowwise() %>%
+    mutate(dept_edges = paste(sort(c(source,target)), collapse = "_")) %>%
+    distinct(dept_edges, .keep_all = TRUE) %>%
+    select(source, target, ClemsonDepartment)
+
+print(dept_edges_undirected)
 ```
