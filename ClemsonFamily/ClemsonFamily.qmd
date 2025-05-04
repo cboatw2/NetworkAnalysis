@@ -1,5 +1,9 @@
 ---
 title: "Clemson Family"
+output: html_document
+execute:
+    warning: false
+    message: false
 ---
 
 In the pursuit of creating broad narratives and themes which account for large trends over long periods historians are often hard-pressed to spend time examining individual institutions or people. Increasingly, however, since the cultural digital turns personal narratives are often interjected into these larger narratives as a way to incorporate "bottom up" histories. 
@@ -10,7 +14,8 @@ The history of Clemson has been written in many ways and for various purposes th
 
 What is perhaps still developing in the history of Clemson are the connections between the various communities. The beautiful new gate installed at the entrance of Cemetery Hill represents the current phase of the project and on-going research initatives. Three ribbons wind their way through the bottom of the gates symbolizing each of the three burial grounds at Cemetery Hill: the original Andrew P. Calhoun plot, the African American burial ground, and Woodland Cemetery. The ribbons symbolize the threads of narrative that occur so visably at Cemetery Hill and that so many historians have worked so hard to tell since the cultural turn.
 
-![Gate at entrance to Cemetery Hill at Clemson University](images/)
+![Gate at entrance to Cemetery Hill at Clemson University](images/CemeteryHillGate.jpg)
+
 By beginning to understand the social networks created among the faculty and officers who became Woodland plot assignees after the cemetery's creation in 1922 we can take another step in the research of understanding the ties that bind Clemson family to itself and how those networks functioned beyond the university. 
 
 Woodland Cemetery, on the campus of Clemson University, was created by President Walter Riggs in 1922. Motivated in part by poor professor retention at Clemson Agricultural College, Riggs devised a plan to use land adjacent to the historic Calhoun family burial plot as a faculty and officer cemetery and their families.
@@ -23,53 +28,54 @@ In order to explore the notion of Clemson Family, examining its existance and fo
 
 The following family names appear on the 1943 Clemson University Atlas:
 
-Henry
-Watkins
-Littlejohn
-Dargin
-Cook
-Cody
-Feely
-Bradley
-Neely
-Milford
-Bryan
-Lemaster
-Aull
-Hunter
-Earle
-Littlejohn
-McCollum
-Trively
-Anderson
-Burley
-Elmore
-Musser
-Cureton
-Rosencran
-Brock
-Harcombe
-Lindsay
-Carey
-Marshall
-Sharpe
-*Sirrine
-*Riggs
-*Tillman
-*Long
+- Henry
+- Watkins
+- Littlejohn
+- Dargin
+- Cook
+- Cody
+- Feely
+- Bradley
+- Neely
+- Milford
+- Bryan
+- Lemaster
+- Aull
+- Hunter
+- Earle
+- Littlejohn
+- McCollum
+- Trively
+- Anderson
+- Burley
+- Elmore
+- Musser
+- Cureton
+- Rosencran
+- Brock
+- Harcombe
+- Lindsay
+- Carey
+- Marshall
+- Sharpe
+- *Sirrine
+- *Riggs
+- *Tillman
+- *Long
 
-*University buildings (not occupied by families)
+- *University buildings (not occupied by families)
 
 The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th Rick Owens, Clemson's preservation officer, found a map of Clemson created by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map became the central focus for this project and dataset.
 
-```{r}
-#load nodes list (entire Airtable dataset converted to .csv)
+```{r, echo=FALSE, results='hide', message=FALSE} 
+
+#load required libraries
 library(readr)
 library(tidyverse)
-ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer2.csv")
-```
+library(igraph)
 
-```{r}
+ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer2.csv") #load nodes list (entire Airtable dataset converted to .csv)
+
 #create edges based on shared Clemson department
 CFD_long <- ClemsonFamilyData %>%
     filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "") %>% #filter rows with missing data in ClemsonDepartment
@@ -88,6 +94,16 @@ dept_edges_undirected <- dept_edges %>%
     mutate(dept_edges = paste(sort(c(source,target)), collapse = "_")) %>%
     distinct(dept_edges, .keep_all = TRUE) %>%
     select(source, target, ClemsonDepartment)
+```
 
-print(dept_edges_undirected)
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#Visualization of department showConnections
+dept_g <-graph_from_data_frame(dept_edges_undirected, directed = FALSE)
+
+plot(dept_g,
+    vertex.label = V(dept_g)$ID,
+    vertex.size = 10,
+    edge.color = "gray70",
+    vertex.color = "skyblue",
+    main = "Network of Shared Departments")
 ```
