@@ -1,0 +1,19 @@
+Created to correct the gray departments in key. First code chunk started working and made this one unnecessary
+```{r, echo=FALSE}
+unique_departments <- unique(campus_residents$DepartmentPrimary)
+num_departments <- length(unique_departments)
+
+library(scales)
+department_colors <- hue_pal()(num_departments)
+
+names(department_colors) <- unique_departments
+
+ggraph(campus_residents_graph, layout = "fr") +
+    geom_edge_link(color = "gray80", alpha = 0.5) +
+  geom_node_point(aes(color = DepartmentPrimary), size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE, size = 3) +
+  theme_void() +
+  ggtitle("Employees in Campus Housing") +
+  scale_color_manual(values = department_colors, na.value = "black")
+```
+

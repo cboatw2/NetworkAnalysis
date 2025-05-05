@@ -93,6 +93,8 @@ Because it is difficult to find the same inforamtion for each group of people, n
 
 To first understand the connects which define the largest groups in the dataset, visualizations of Clemson employees who lived in campus housing as well as those who are interred in Woodland provide the first layer of connection.
 
+
+Broken:
 ```{r, echo=FALSE, results='hide'} 
 
 #Create edges based on shared Clemson department
@@ -114,6 +116,8 @@ dept_edges_undirected <- dept_edges %>%
     distinct(dept_edges, .keep_all = TRUE) %>%
     select(source, target, ClemsonDepartment)
 ```
+
+
 
 ```{r, echo=FALSE, results='hide'}
 #Create a visualization that shows the residents of Clemson Housing, color-coded by their department
@@ -141,7 +145,7 @@ ggraph(campus_residents_graph, layout = "fr") +
   geom_node_text(aes(label = name), repel = TRUE, size = 3) +
   theme_void() +
   ggtitle("Employees in Campus Housing") +
-  scale_color_viridis(option = "plasma", na.value = "gray50")
+  scale_color_viridis(option = "plasma", na.value = "transparent")
   facet_nodes(~DepartmentPrimary) #group nodes by department
 ```
 
