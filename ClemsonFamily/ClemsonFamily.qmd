@@ -5,18 +5,35 @@ execute:
     warning: false
     message: false
 ---
+```{r, echo=FALSE}
+#load necessary libraries
+library(tidyverse)
+library(igraph)
+library(tidygraph)
+library(ggraph)
+library(readr)
+```
 
-In the pursuit of creating broad narratives and themes which account for large trends over long periods historians are often hard-pressed to spend time examining individual institutions or people. Increasingly, however, since the cultural digital turns personal narratives are often interjected into these larger narratives as a way to incorporate "bottom up" histories. 
+```{r, echo=FALSE}
+ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer2.csv") #load nodes list (entire Airtable dataset converted to .csv)
+```
 
-Perhaps what sometimes falls through the cracks of historic scholarship are institutional histories done at a high, academic level. The reasons for this gap is expressed by Joseph Amago in *Rethinking Home* regarding his an other historians work with local histories. Often relagate to non-professional historians or historical societies, local histories fail to draw scholars because of the need for "commitment to the micro-landscapes in an era of macro foces" (Amato, 187). Amato calls for a new generation of historians who shed the need for systemization for a commitment to particular histories and who "reject overarching explantions for microhistories, instead staying tru to details, anecdotes, and peculiarities of place...they prefer case studies to academic theory". 
+## Historical Context
+In the pursuit of creating broad narratives and themes which account for large trends over long periods historians are often hard-pressed to spend time examining individual institutions or people. Increasingly, however, since the cultural and digital turns, personal narratives are often interjected into these larger narratives as a way to create more complete and inclusive histories. These inclusions provide human connections within larger themes of social, political and economic change. This project seeks to provide, not intricate details of lives that contributed to Clemson Agricultural College during the first half of the twentieth century, but rather a close examination of the connections between their lives.
 
-The history of Clemson has been written in many ways and for various purposes throughout the years. Jerry Reel who has perhaps written the seminal history of Clemson University in the *High Seminary* volumes ...While the univeristy's history has been approached from a scholarly standpoint, a cursory glance at the majority of the published histories reveal that football and personal experiences as students dominate the literature. While wonderful for fans and alumni, these book do little to position Clemson within the larger themes of southern, race, gender or other widely accepted themes of scholarship. The confirmation of unmarked African American burials at Cemetery Hill in 2020 and the resulting publications by Dr. Rhondda Thomas have greatly expanded Clemson's history, especially in regards to race.
+There exists a rich tradition of institutional histories in the historiography of higher education in the United States. Perhaps what sometimes falls through the cracks of historic scholarship are institutional histories done at a high, academic level. The reasons for this gap is may be expressed by Joseph Amago in *Rethinking Home* regarding his an other historians work with local histories. Often relagate to non-professional historians or historical societies, local histories fail to draw scholars because of the need for "commitment to the micro-landscapes in an era of macro foces" (Amato, 187). Amato calls for a new generation of historians who shed the need for systemization for a commitment to particular histories and who "reject overarching explantions for microhistories, instead staying tru to details, anecdotes, and peculiarities of place...they prefer case studies to academic theory". 
 
-What is perhaps still developing in the history of Clemson are the connections between the various communities. The beautiful new gate installed at the entrance of Cemetery Hill represents the current phase of the project and on-going research initatives. Three ribbons wind their way through the bottom of the gates symbolizing each of the three burial grounds at Cemetery Hill: the original Andrew P. Calhoun plot, the African American burial ground, and Woodland Cemetery. The ribbons symbolize the threads of narrative that occur so visably at Cemetery Hill and that so many historians have worked so hard to tell since the cultural turn.
+The history of Clemson University has been written in many ways and for various purposes throughout the years. Jerry Reel who has written what is perhaps the seminal history of Clemson University in the *High Seminary* volumes follows the well-worn tradition of emeritus scholars writing about their institutional homes. Reel's careful examination of the Board of Trustees, presidents, football program highlights, and the development of the physical spaces of the university provide alumni and fans the opportunity to learn about the decisions and directions that created Clemson University as it exists today. While Dr. Reel has contributed to the telling of Clemson's history from a scholarly standpoint, a cursory glance at the majority of the published histories reveal that football and personal experiences as students still largely dominate the literature. 
+
+While wonderful for fans and alumni, these book do little to position Clemson within the larger themes of southern, race, gender or other widely accepted themes of scholarship. The confirmation of unmarked African American burials at Cemetery Hill in 2020 and the resulting publications by Dr. Rhondda Thomas have greatly expanded Clemson's history, especially in regards to race. Thomas' scholarly efforts in *Call My Name* and *Rhetoric, Public Memory, and Campus History* illuminate the entirety of Clemson's history reaching into is antebellum past as a plantation powered by unfree African American labor, to the postbellum construction of college buildings by mostly black convicts lessed to Clemson Agricultural College by the state of South Carolina.
+
+What is perhaps still developing in the history of Clemson are the connections between the various communities. The beautiful new gate installed at the entrance of Cemetery Hill represents the current phase of the project and on-going research initatives part of which is beginning to try and understand the interactions and influences of the various communtities with and on one another. Three ribbons wind their way through the bottom of the gates symbolizing each of the three burial grounds at Cemetery Hill: the original Andrew P. Calhoun plot, the African American burial ground, and Woodland Cemetery. The ribbons symbolize the threads of narrative that occur so visably at Cemetery Hill and that so many historians have worked so hard to tell since the cultural turn.
 
 ![Gate at entrance to Cemetery Hill at Clemson University](images/CemeteryHillGate.jpg)
 
 By beginning to understand the social networks created among the faculty and officers who became Woodland plot assignees after the cemetery's creation in 1922 we can take another step in the research of understanding the ties that bind Clemson family to itself and how those networks functioned beyond the university. 
+
+## History of Woodland Cemetery
 
 Woodland Cemetery, on the campus of Clemson University, was created by President Walter Riggs in 1922. Motivated in part by poor professor retention at Clemson Agricultural College, Riggs devised a plan to use land adjacent to the historic Calhoun family burial plot as a faculty and officer cemetery and their families.
 
@@ -65,18 +82,20 @@ The following family names appear on the 1943 Clemson University Atlas:
 
 - *University buildings (not occupied by families)
 
-The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th Rick Owens, Clemson's preservation officer, found a map of Clemson created by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map became the central focus for this project and dataset.
+The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th, 2025 Rick Owens, Clemson's preservation officer, found a map of Clemson created by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map along with the Clemson Record, Catalog and Announcements for the 1936-1937 academic year are the foundational documents for this project and dataset.
 
-```{r, echo=FALSE, results='hide', message=FALSE} 
 
-#load required libraries
-library(readr)
-library(tidyverse)
-library(igraph)
+## Layers of Connections
 
-ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer2.csv") #load nodes list (entire Airtable dataset converted to .csv)
+The dataset for this project began by documenting people that lived in campus housing as evidenced either by the 1936 map or the 1943 atlas. The dataset was then expanded by recording the people that are recorded in the 1936-37 Clemson Record, Catalog and Announcements. The Record provides detailed information about the officers, faculty and other members of Clemson's staff such as which department or office employed them, and where they received their undergraduate and graduate degrees.  
 
-#create edges based on shared Clemson department
+Because it is difficult to find the same inforamtion for each group of people, not every record is as completely populated as it would be in an ideal project. This is especially true for faculty and other university employees that are not buried in Woodland. Because it then becomes necessary to discover where they went, if they left Clemson, and their burial location in order to locate their obituary or other documents that would provide the same information about their social and civil engagement during their time at Clemson it would require research beyond the scope of this project.
+
+To first understand the connects which define the largest groups in the dataset, visualizations of Clemson employees who lived in campus housing as well as those who are interred in Woodland provide the first layer of connection.
+
+```{r, echo=FALSE, results='hide'} 
+
+#Create edges based on shared Clemson department
 CFD_long <- ClemsonFamilyData %>%
     filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "") %>% #filter rows with missing data in ClemsonDepartment
     separate_rows(ClemsonDepartment, sep = ",\\s*") #separates multi-select field    
@@ -96,7 +115,37 @@ dept_edges_undirected <- dept_edges %>%
     select(source, target, ClemsonDepartment)
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, results='hide'}
+#Create a visualization that shows the residents of Clemson Housing, color-coded by their department
+campus_residents <- ClemsonFamilyData %>%
+  filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "") %>% #filters blank or missing data
+  filter(ClemsonHousing == TRUE) #filter residents
+
+  #print(campus_residents)
+
+campus_residents <- campus_residents %>% #uses only the first department if multiple are listed
+  mutate(DepartmentPrimary = str_split(ClemsonDepartment, ",|;") %>% map_chr(1) %>% str_trim())
+
+edges_clique <- t(combn(campus_residents$ID, 2)) %>% #create a fully connected network
+  as_tibble() %>%
+  rename(source = V1, target = V2)
+
+# 3. Create graph and add department as node attribute
+campus_residents_graph <- as_tbl_graph(edges_clique, directed = FALSE) %>%
+  left_join(campus_residents, by = c("name" = "ID"))
+
+# 4. Plot the network, color by department
+ggraph(campus_residents_graph, layout = "fr") +
+  geom_edge_link(color = "gray80", alpha = 0.5) +
+  geom_node_point(aes(color = DepartmentPrimary), size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE, size = 3) +
+  theme_void() +
+  ggtitle("Employees in Campus Housing") +
+  scale_color_viridis(option = "plasma", na.value = "gray50")
+  facet_nodes(~DepartmentPrimary) #group nodes by department
+```
+
+```{r, echo=FALSE}
 #Visualization of department showConnections
 dept_g <-graph_from_data_frame(dept_edges_undirected, directed = FALSE)
 
@@ -107,3 +156,8 @@ plot(dept_g,
     vertex.color = "skyblue",
     main = "Network of Shared Departments")
 ```
+
+
+## For Further Research
+
+There are hundreds of additional names listed in the 1936-37 Clemson Record, Catalog and Announcements. Instructors, Agricultural Experiment Station staff, Home Demonstration Agents as well as the black 
