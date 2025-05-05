@@ -1,4 +1,4 @@
-Created to correct the gray departments in key. First code chunk started working and made this one unnecessary
+Created to correct the gray departments in key in the "Employees in Campus Housing". First code chunk started working and made this one unnecessary
 ```{r, echo=FALSE}
 unique_departments <- unique(campus_residents$DepartmentPrimary)
 num_departments <- length(unique_departments)
@@ -17,3 +17,26 @@ ggraph(campus_residents_graph, layout = "fr") +
   scale_color_manual(values = department_colors, na.value = "black")
 ```
 
+
+Broken:
+```{r, echo=FALSE, results='hide'} 
+
+#Create edges based on shared Clemson department
+CFD_long <- ClemsonFamilyData %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "") %>% #filter rows with missing data in ClemsonDepartment
+    separate_rows(ClemsonDepartment, sep = ",\\s*") #separates multi-select field    
+
+#Join by ClemsonDepartment to identify relationships
+dept_edges <- CFD_long %>%
+    select(ID, ClemsonDepartment) %>%
+    inner_join(CFD_long, by = c("ClemsonDepartment")) %>% #identifies matching departments to create relationships
+    filter(ID.x < ID.y) %>% #avoids duplicates created by making data long
+    select(source = ID.x, target = ID.y, ClemsonDepartment) %>%
+    distinct()
+
+dept_edges_undirected <- dept_edges %>%
+    rowwise() %>%
+    mutate(dept_edges = paste(sort(c(source,target)), collapse = "_")) %>%
+    distinct(dept_edges, .keep_all = TRUE) %>%
+    select(source, target, ClemsonDepartment)
+```

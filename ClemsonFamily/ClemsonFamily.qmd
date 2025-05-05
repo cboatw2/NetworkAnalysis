@@ -93,31 +93,7 @@ Because it is difficult to find the same inforamtion for each group of people, n
 
 To first understand the connects which define the largest groups in the dataset, visualizations of Clemson employees who lived in campus housing as well as those who are interred in Woodland provide the first layer of connection.
 
-
-Broken:
-```{r, echo=FALSE, results='hide'} 
-
-#Create edges based on shared Clemson department
-CFD_long <- ClemsonFamilyData %>%
-    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "") %>% #filter rows with missing data in ClemsonDepartment
-    separate_rows(ClemsonDepartment, sep = ",\\s*") #separates multi-select field    
-
-#Join by ClemsonDepartment to identify relationships
-dept_edges <- CFD_long %>%
-    select(ID, ClemsonDepartment) %>%
-    inner_join(CFD_long, by = c("ClemsonDepartment")) %>% #identifies matching departments to create relationships
-    filter(ID.x < ID.y) %>% #avoids duplicates created by making data long
-    select(source = ID.x, target = ID.y, ClemsonDepartment) %>%
-    distinct()
-
-dept_edges_undirected <- dept_edges %>%
-    rowwise() %>%
-    mutate(dept_edges = paste(sort(c(source,target)), collapse = "_")) %>%
-    distinct(dept_edges, .keep_all = TRUE) %>%
-    select(source, target, ClemsonDepartment)
-```
-
-
+Each employee that appears on the 1936 Clemson Map key is connected by their proximity to one another. To live and work with the same group of people heavily shaped their day-to-day lives and interactions with one another. The differentition becomes in what area they worked.
 
 ```{r, echo=FALSE, results='hide'}
 #Create a visualization that shows the residents of Clemson Housing, color-coded by their department
@@ -145,8 +121,86 @@ ggraph(campus_residents_graph, layout = "fr") +
   geom_node_text(aes(label = name), repel = TRUE, size = 3) +
   theme_void() +
   ggtitle("Employees in Campus Housing") +
+  labs(subtitle = "While this is a visually noisy graph because it is fully connected, it represents the weight of the connectedness of the lives of Clemson employees who also lived on campus") +
   scale_color_viridis(option = "plasma", na.value = "transparent")
   facet_nodes(~DepartmentPrimary) #group nodes by department
+```
+
+To futher examine the layers of connections between individual it is helpful to examine the institutions where they received their degrees before coming to Clemson.
+
+```{r, echo=FALSE}
+library(tidyverse)
+
+# 1. Combine all degree institutions into one long-format column
+degree_institutions <- ClemsonFamilyData %>%
+  select(UndergraduateInstitution, MastersInstitution, PhDInstitution) %>%
+  pivot_longer(cols = everything(), names_to = "DegreeLevel", values_to = "Institution") %>%
+  filter(!is.na(Institution) & Institution != "") %>%
+  mutate(Institution = str_trim(Institution))
+
+# 2. Count how many times each institution appears
+institution_counts <- degree_institutions %>%
+  group_by(Institution) %>%
+  summarise(Count = n()) %>%
+  arrange(desc(Count))
+
+# 3. Plot bar graph
+ggplot(institution_counts, aes(x = reorder(Institution, Count), y = Count)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Counts of Institutions Where Degrees Were Received",
+       x = "Institution",
+       y = "Number of Individuals") +
+  theme_minimal()
+
+```
+
+
+It's no suprise that so many of the employees received degrees from Clemson. To futher illustrate these connections further, however, it is helpful to see what levels of degrees came from which institutions:
+
+```{r, echo=FALSE}
+
+library(tidyverse)
+
+# 1. Reshape the data
+degree_data <- ClemsonFamilyData %>%
+  select(UndergraduateInstitution, MastersInstitution, PhDInstitution) %>%
+  pivot_longer(cols = everything(),
+               names_to = "DegreeLevel",
+               values_to = "Institution") %>%
+  filter(!is.na(Institution) & Institution != "") %>%
+  mutate(
+    Institution = str_trim(Institution),
+    DegreeLevel = recode(DegreeLevel,
+                         UndergraduateInstitution = "Undergraduate",
+                         MastersInstitution = "Masters",
+                         PhDInstitution = "PhD"),
+    DegreeLevel = factor(DegreeLevel, levels = c("Undergraduate", "Masters", "PhD"))
+  )
+
+# 2. Count and rank institutions within each degree level
+institution_counts_by_level <- degree_data %>%
+  group_by(DegreeLevel, Institution) %>%
+  summarise(Count = n(), .groups = "drop")
+
+# 3. Order institutions by count within each degree level
+institution_counts_by_level <- institution_counts_by_level %>%
+  group_by(DegreeLevel) %>%
+  mutate(Institution = fct_reorder(Institution, Count)) %>%
+  ungroup()
+
+# 4. Plot
+ggplot(institution_counts_by_level, aes(x = Institution, y = Count, fill = DegreeLevel)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ DegreeLevel, scales = "free") +
+  coord_flip() +
+  labs(
+    title = "Degrees by Institution and Level",
+    x = "Institution",
+    y = "Number of Individuals"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 ```
 
 ```{r, echo=FALSE}
