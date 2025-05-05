@@ -40,3 +40,16 @@ dept_edges_undirected <- dept_edges %>%
     distinct(dept_edges, .keep_all = TRUE) %>%
     select(source, target, ClemsonDepartment)
 ```
+
+Department network:
+```{r, echo=FALSE}
+#Visualization of department showConnections
+dept_g <-graph_from_data_frame(dept_edges_undirected, directed = FALSE)
+
+plot(dept_g,
+    vertex.label = V(dept_g)$ID,
+    vertex.size = 10,
+    edge.color = "gray70",
+    vertex.color = "skyblue",
+    main = "Network of Shared Departments")
+```
