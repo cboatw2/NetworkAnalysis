@@ -235,8 +235,13 @@ To understand the value of a Clemson degree for the men that would become member
 ```{r, echo=FALSE}
 
 # 1. Filter individuals
-housing <- ClemsonFamilyData %>% filter(CampusHousing == TRUE)
+housing <- ClemsonFamilyData %>% filter(ClemsonHousing == TRUE)
 burial <- ClemsonFamilyData %>% filter(WoodlandBurial == TRUE)
+
+print(housing)
+print(burial)
+
+```
 
 # 2. Create edges: link all individuals in the same group (clique-style edges)
 # Helper to create pairwise edges within a group
@@ -246,16 +251,17 @@ create_edges <- function(data, label) {
 }
 
 # 3. Create edges for each group
-edges_housing <- create_edges(housing, "CampusHousing")
+edges_housing <- create_edges(housing, "ClemsonHousing")
 edges_burial <- create_edges(burial, "WoodlandBurial")
 
 # 4. Combine edges
 edges <- bind_rows(edges_housing, edges_burial)
 
+
 # 5. Create node list with attributes
 nodes <- ClemsonFamilyData %>%
   filter(ID %in% unique(c(edges$from, edges$to))) %>%
-  select(ID, CampusHousing, WoodlandBurial) %>%
+  select(ID, ClemsonHousing, WoodlandBurial) %>%
   mutate(label = ID)
 
 # 6. Build graph
@@ -265,12 +271,12 @@ worked_and_died_graph <- graph_from_data_frame(d = edges, vertices = nodes, dire
 ggraph(worked_and_died_graph, layout = "fr") +
   geom_edge_link(aes(color = group), alpha = 0.4) +
   geom_node_point(aes(color = case_when(
-    CampusHousing == TRUE & WoodlandBurial == TRUE ~ "Both",
-    CampusHousing == TRUE ~ "Housing Only",
+    ClemsonHousing == TRUE & WoodlandBurial == TRUE ~ "Both",
+    ClemsonHousing == TRUE ~ "Housing Only",
     WoodlandBurial == TRUE ~ "Burial Only"
   )), size = 3) +
   geom_node_text(aes(label = label), size = 2, repel = TRUE) +
-  scale_edge_color_manual(values = c("CampusHousing" = "blue", "WoodlandBurial" = "green")) +
+  scale_edge_color_manual(values = c("ClemsonHousing" = "blue", "WoodlandBurial" = "green")) +
   scale_color_manual(values = c("Housing Only" = "blue", "Burial Only" = "green", "Both" = "purple")) +
   theme_void() +
   labs(title = "Network of Individuals in Campus Housing and Cemetery")
