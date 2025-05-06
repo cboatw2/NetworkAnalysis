@@ -15,7 +15,7 @@ library(readr)
 ```
 
 ```{r, echo=FALSE}
-ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer2.csv") #load nodes list (entire Airtable dataset converted to .csv)
+ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer3.csv") #load nodes list (entire Airtable dataset converted to .csv)
 ```
 
 ## Historical Context
@@ -110,9 +110,9 @@ edges_clique <- t(combn(campus_residents$ID, 2)) %>% #create a fully connected n
   as_tibble() %>%
   rename(source = V1, target = V2)
 
-# 3. Create graph and add department as node attribute
+Create graph and add department as node attribute
 campus_residents_graph <- as_tbl_graph(edges_clique, directed = FALSE) %>%
-  left_join(campus_residents, by = c("name" = "ID"))
+  left_join(campus_residents, by = c("name" = "ID")) 
 
 # 4. Plot the network, color by department
 ggraph(campus_residents_graph, layout = "fr") +
@@ -121,9 +121,27 @@ ggraph(campus_residents_graph, layout = "fr") +
   geom_node_text(aes(label = name), repel = TRUE, size = 3) +
   theme_void() +
   ggtitle("Employees in Campus Housing") +
-  labs(subtitle = "While this is a visually noisy graph because it is fully connected, it represents the weight of the connectedness of the lives of Clemson employees who also lived on campus") +
+  #labs(subtitle = "While this is a visually noisy graph because it is fully connected, it represents the weight of the connectedness of the lives of Clemson employees who also lived on campus") +
   scale_color_viridis(option = "plasma", na.value = "transparent")
-  facet_nodes(~DepartmentPrimary) #group nodes by department
+  #facet_nodes(~DepartmentPrimary) #group nodes by department
+```
+
+```{r, echo=FALSE}
+unique_departments <- unique(campus_residents$DepartmentPrimary)
+num_departments <- length(unique_departments)
+
+library(scales)
+department_colors <- hue_pal()(num_departments)
+
+names(department_colors) <- unique_departments
+
+ggraph(campus_residents_graph, layout = "fr") +
+    geom_edge_link(color = "gray80", alpha = 0.5) +
+  geom_node_point(aes(color = DepartmentPrimary), size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE, size = 3) +
+  theme_void() +
+  ggtitle("Employees in Campus Housing") +
+  scale_color_manual(values = department_colors, na.value = "black")
 ```
 
 To futher examine the layers of connections between individual it is helpful to examine the institutions where they received their degrees before coming to Clemson.
@@ -233,18 +251,62 @@ ggplot(clemson_degree_counts, aes(x = has_clemson_degree, y = n, fill = has_clem
 To understand the value of a Clemson degree for the men that would become members of the faculty and staff the two preceeding visualizations must work in tandem. While those who were deans without Clemson degrees outnumber those with Clemson degrees, at this time Clemson was only awarding bachelors degrees. (footnote: 1936 record) There may be multiple reasons that Clemson graduates were rising to higher ranks in the school namely, the focus on local agriculture as well as the military training. Possibly, the men coming into faculty and staff positions were more quickly adaptable to the systems and structure of Clemosn Agricultural College. Regardless, the tendency to hire and promote Clemson men over their colleges with degrees, and sometimes more advanced degrees, is a strong influencer in the Clemson Family network.
 
 ```{r, echo=FALSE}
+#Network of connectedness of individuals without showing campus housing or Woodland burial IN PROGRESS
 
-# 1. Filter individuals
+#Create list of columns that represent connections between IDs
+connections <- c(
+  "FamilyPlotName", "ClemsonDepartment", "ChurchMembership",
+  "ProfessionalMembership1", "ProfessionalMembership2", "ProfessionalMembership3", "ClemsonAffliatedMembership1","ClemsonAffliatedMembership2", "ClemsonAffiliatedMembers3",
+  "SocialMembership1", "SocialMembership2", "SocialMembership3", "SocialMembership4",
+  "CivicMembership", "OtherMembership", "UndergraduateInstitution", "MastersInstitution", "PhDInstitution"
+)
+
+#Pivot data to long format
+affiliations_long <- ClemsonFamilyData %>%
+  select(ID, all_of(affiliation_cols)) %>%
+  pivot_longer(cols = -ID, names_to = "ConnectionType", values_to = "Group") %>%
+  filter(!is.na(Group) & Group != "") %>%
+  mutate(Group = str_trim(Group))
+
+#Create edge list showing connections between individuals in groups
+edges_all <- affiliations_long %>%
+  group_by(Group) %>%
+  summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
+  unnest(pairs) %>%
+  mutate(from = map_chr(pairs, 1),
+         to = map_chr(pairs, 2)) %>%
+  select(from, to, Group)
+
+# Optional: remove duplicated edges across multiple affiliations
+#edges_all_unique <- edges_all %>%
+  distinct(from, to)
+
+#Create node list with optional attributes (e.g., Department)
+nodes <- ClemsonFamilyData %>%
+  filter(ID %in% unique(c(edges_all_unique$from, edges_all_unique$to))) %>%
+  select(ID, ClemsonDepartment) %>%
+  rename(label = ID)
+
+#Build graph
+g <- connections_graph(edges_all_unique, vertices = nodes, directed = FALSE)
+
+# 6. Plot
+ggraph(g, layout = "fr") +
+  geom_edge_link(alpha = 0.3) +
+  geom_node_point(aes(color = ClemsonDepartment), size = 3) +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  theme_void() +
+  labs(title = "Network On and Off Campus Connections")
+```
+
+```{r}
+#Network of everyone that lived in campus housing and is also buried in Woodland IN PROGRESS
+
+#Filter individuals
 housing <- ClemsonFamilyData %>% filter(ClemsonHousing == TRUE)
 burial <- ClemsonFamilyData %>% filter(WoodlandBurial == TRUE)
 
-print(housing)
-print(burial)
-
-```
-
 # 2. Create edges: link all individuals in the same group (clique-style edges)
-# Helper to create pairwise edges within a group
 create_edges <- function(data, label) {
   combn(data$ID, 2, simplify = FALSE) %>%
     map_df(~ tibble(from = .x[1], to = .x[2], group = label))
@@ -257,15 +319,23 @@ edges_burial <- create_edges(burial, "WoodlandBurial")
 # 4. Combine edges
 edges <- bind_rows(edges_housing, edges_burial)
 
-
 # 5. Create node list with attributes
 nodes <- ClemsonFamilyData %>%
   filter(ID %in% unique(c(edges$from, edges$to))) %>%
   select(ID, ClemsonHousing, WoodlandBurial) %>%
-  mutate(label = ID)
+  mutate(label = ID) %>%
+  distinct(ID, .keep_all = TRUE) # Ensure unique IDs
 
-# 6. Build graph
+# 6. Clean edges
+edges <- edges %>%
+  filter(from %in% nodes$ID & to %in% nodes$ID) %>%
+  distinct(from, to, .keep_all = TRUE) # Remove duplicate edges
+
+# 7. Build graph
 worked_and_died_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
+
+# 8. Print the graph
+#print(worked_and_died_graph)
 
 # 7. Plot the network
 ggraph(worked_and_died_graph, layout = "fr") +
@@ -283,6 +353,51 @@ ggraph(worked_and_died_graph, layout = "fr") +
 
 ```
 
+```{r, echo=FALSE}
+#Simplified network of all individuals that lived in campus housing and was buried in Woodland
+#Filter individuals
+housing <- ClemsonFamilyData %>% filter(ClemsonHousing == TRUE) %>% slice(1:50)
+burial <- ClemsonFamilyData %>% filter(WoodlandBurial == TRUE) %>% slice(1:50)
+
+#Create edges
+create_edges <- function(data, label) {
+  combn(data$ID, 2, simplify = FALSE) %>%
+    map_df(~ tibble(from = .x[1], to = .x[2], group = label))
+}
+
+edges_housing <- create_edges(housing, "ClemsonHousing")
+edges_burial <- create_edges(burial, "WoodlandBurial")
+
+#Combine edges
+edges <- bind_rows(edges_housing, edges_burial) %>% slice(1:1000) # Limit edges
+
+#Create nodes
+nodes <- ClemsonFamilyData %>%
+  filter(ID %in% unique(c(edges$from, edges$to))) %>%
+  select(ID, ClemsonHousing, WoodlandBurial) %>%
+  mutate(label = ID) %>%
+  distinct(ID, .keep_all = TRUE)
+
+#Build graph
+worked_and_died_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
+
+#Plot graph
+ggraph(worked_and_died_graph, layout = "fr") +
+  geom_edge_link(aes(color = group), alpha = 0.4) +
+  geom_node_point(aes(color = case_when(
+    ClemsonHousing == TRUE & WoodlandBurial == TRUE ~ "Both",
+    ClemsonHousing == TRUE ~ "Housing Only",
+    WoodlandBurial == TRUE ~ "Burial Only"
+  )), size = 3) +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  scale_edge_color_manual(values = c("ClemsonHousing" = "blue", "WoodlandBurial" = "green")) +
+  scale_color_manual(values = c("Housing Only" = "blue", "Burial Only" = "green", "Both" = "purple")) +
+  theme_void() +
+  labs(title = "Network of Individuals in Campus Housing and Cemetery")
+```
+
+
+Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
 
 
