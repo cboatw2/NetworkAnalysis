@@ -396,6 +396,50 @@ ggraph(worked_and_died_graph, layout = "fr") +
   labs(title = "Network of Individuals in Campus Housing and Cemetery")
 ```
 
+```{r, echo=FALSE}
+#Second attempt to build network of connectedness, not including Woodland or campus housing
+
+#Define columns representing connections
+connections <- c(
+  "ClemsonDepartment", "ChurchMembership", "CivicMembership",
+  "SocialMembership1"
+)
+
+#Pivot data to long format
+connections_long <- ClemsonFamilyData %>%
+  select(ID, all_of(connections)) %>%
+  pivot_longer(cols = -ID, names_to = "ConnectionType", values_to = "Group") %>%
+  filter(!is.na(Group) & Group != "") %>%
+  mutate(Group = str_trim(Group))
+
+#Create edge list from connections
+connection_edges <- connections_long %>%
+  group_by(Group, ConnectionType) %>%
+  filter(n() > 1) %>% # Exclude groups with fewer than 2 members
+  summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
+  unnest(pairs) %>%
+  mutate(from = map_chr(pairs, 1),
+         to = map_chr(pairs, 2)) %>%
+  select(from, to, ConnectionType) %>%
+  distinct(from, to, ConnectionType) # Remove duplicate edges
+
+# 4. Create node list
+connection_nodes <- ClemsonFamilyData %>%
+  filter(ID %in% unique(c(connection_edges$from, connections_edges$to))) %>%
+  select(ID, ClemsonDepartment) %>%
+  rename(label = ID)
+
+# 5. Build graph
+connections_network <- graph_from_data_frame(d = connection_edges, vertices = connection_nodes, directed = FALSE)
+
+# 6. Plot the network
+ggraph(connections_network, layout = "fr") +
+  geom_edge_link(aes(color = ConnectionType), alpha = 0.5) +
+  geom_node_point(size = 3, color = "black") +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  scale_edge_color_manual(values = c(
+    "ClemsonDepartment" = "blue", "ChurchMembership" = "pink", "Civic Membership" = "red", "SocialMembership1" = "green"))
+```
 
 Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
