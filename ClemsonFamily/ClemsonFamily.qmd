@@ -508,6 +508,36 @@ ggraph(network_graph, layout = "fr") +
        node_color = "Department")
 ```
 
+```{r, echo=FALSE}
+#trying visNetwork
+
+#load package
+library(visNetwork)
+
+#load .csv files
+nodes <- read.csv (ClemsonFamilyNodesListVer3.csv, stringAsFactors = FALSE)
+nodes <- as.data.frame(nodes)
+
+edges <- read.csv (CFEdgesList.csv, stringsAsFactors = FALSE) 
+edges <- as.data.frame(edges)
+
+#Create visualization
+
+edges <- edges %>% rename(from = ID, to = ID.1)
+
+
+visNetwork(nodes = nodes, edges = edges, height = 650, width = 1100) %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>% 
+  visNodes(size = 36, 
+           label = paste(nodes$id),
+           title = title,
+           font = list("size" = 20)) %>%
+  visEdges(color = list(color = edges$color, opacity = 0.2),
+           hoverWidth = 20,
+           selectionWidth = 36) 
+```
+
+```
 
 Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
