@@ -12,6 +12,7 @@ library(igraph)
 library(tidygraph)
 library(ggraph)
 library(readr)
+library(visNetwork)
 ```
 
 ```{r, echo=FALSE}
@@ -512,20 +513,38 @@ ggraph(network_graph, layout = "fr") +
 #trying visNetwork IN PROGRESS
 
 #load package
-library(visNetwork)
+
 
 #load .csv files
-nodes <- read.csv("ClemsonFamilyNodesListVer3.csv", stringsAsFactors = FALSE)
+nodes <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer3.csv", stringsAsFactors = FALSE)
 nodes <- as.data.frame(nodes)
 
-edges <- read.csv("CFEdgesListVer2.csv", stringsAsFactors = FALSE) 
+edges <- read.csv("ClemsonFamily_files/files/CFEdgesListVer2.csv", stringsAsFactors = FALSE) 
 edges <- as.data.frame(edges)
 
-
+#str(nodes) checking node structure
+#str(edges) checking edge structure
 #Create visualization
 
-edges <- edges %>% rename(from = ID, to = ID.1)
+# Rename the ID column in nodes if necessary
+nodes <- nodes %>% rename(id = ID) # Replace `ID` with the actual column name
 
+# Remove rows with missing or empty IDs
+nodes <- nodes %>% filter(!is.na(id) & id != "")
+
+nodes$id <- as.character(nodes$id)
+edges$from <- as.character(edges$from)
+edges$to <- as.character(edges$to)
+
+nodes <- nodes %>% distinct(id, .keep_all = TRUE)
+
+
+edges <- edges %>% rename(from = ID, to = ClemsonDepartment)
+
+edges <- edges %>%
+  filter(from %in% nodes$id & to %in% nodes$id)
+
+print(edges)
 
 visNetwork(nodes = nodes, edges = edges, height = 650, width = 1100) %>%
   visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>% 
@@ -595,7 +614,7 @@ ggraph(g, layout = "fr") +
 set_graph_style()
 
 # Load the edges list as a data frame
-edges <- read.csv("CFEdgesListVer2.csv", stringsAsFactors = FALSE)
+edges <- read.csv("ClemsonFamily_files/files/CFEdgesListVer2.csv", stringsAsFactors = FALSE)
 
 # Check the structure of the data frame
 str(edges)
