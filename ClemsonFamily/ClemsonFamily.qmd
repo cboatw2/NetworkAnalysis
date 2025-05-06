@@ -509,17 +509,18 @@ ggraph(network_graph, layout = "fr") +
 ```
 
 ```{r, echo=FALSE}
-#trying visNetwork
+#trying visNetwork IN PROGRESS
 
 #load package
 library(visNetwork)
 
 #load .csv files
-nodes <- read.csv (ClemsonFamilyNodesListVer3.csv, stringAsFactors = FALSE)
+nodes <- read.csv("ClemsonFamilyNodesListVer3.csv", stringsAsFactors = FALSE)
 nodes <- as.data.frame(nodes)
 
-edges <- read.csv (CFEdgesList.csv, stringsAsFactors = FALSE) 
+edges <- read.csv("CFEdgesListVer2.csv", stringsAsFactors = FALSE) 
 edges <- as.data.frame(edges)
+
 
 #Create visualization
 
@@ -537,12 +538,69 @@ visNetwork(nodes = nodes, edges = edges, height = 650, width = 1100) %>%
            selectionWidth = 36) 
 ```
 
-```
 
 Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
+```{r, echo=FALSE}
+#Building a network of church membership and clemson department connectedness
 
+# Assume your dataset is already loaded into a data frame called `df`
+df <- read.csv("ClemsonFamily_files/files/CFEdgesList.csv", stringsAsFactors = FALSE)
 
+# 1. Reshape to long format
+df_long <- df %>%
+  select(ID, ClemsonDepartment, ChurchMembership) %>%
+  pivot_longer(cols = c(ClemsonDepartment, ChurchMembership), 
+               names_to = "Type", 
+               values_to = "Group") %>%
+  filter(!is.na(Group) & Group != "") %>%
+  mutate(Group = str_trim(Group))
+
+# 2. Create edge list: connect people who share the same Group
+edges <- df_long %>%
+  edges <- df_long %>%
+  group_by(Group) %>%
+  filter(n() > 1) %>% # Exclude groups with fewer than 2 members
+  reframe(pairs = combn(ID, 2, simplify = FALSE)) %>% # Use reframe instead of summarise
+  unnest(pairs) %>%
+  mutate(
+    from = map_chr(pairs, 1), # Extract the first element of each pair
+    to = map_chr(pairs, 2)    # Extract the second element of each pair
+  ) %>%
+  select(from, to, Group)
+
+# Optional: remove duplicates
+edges_unique <- edges %>% distinct(from, to)
+
+# 3. Prepare node attributes
+nodes <- df %>%
+  filter(ID %in% unique(c(edges_unique$from, edges_unique$to))) %>%
+  select(ID, ClemsonDepartment, ChurchMembership) %>%
+  rename(label = ID)
+
+# 4. Create graph
+g <- graph_from_data_frame(edges_unique, vertices = nodes, directed = FALSE)
+
+# 5. Plot
+ggraph(g, layout = "fr") +
+  geom_edge_link(alpha = 0.3) +
+  geom_node_point(color = "steelblue", size = 3) +
+  geom_node_text(aes(label = label), repel = TRUE, size = 3) +
+  theme_void() +
+  labs(title = "Network of Shared Department or Church Membership")
+
+```
+
+```{r, echo=FALSE}
+set_graph_style()
+
+# Load the edges list as a data frame
+edges <- read.csv("CFEdgesListVer2.csv", stringsAsFactors = FALSE)
+
+# Check the structure of the data frame
+str(edges)
+
+```
 ## For Further Research
 
 There are hundreds of additional names listed in the 1936-37 Clemson Record, Catalog and Announcements. Instructors, Agricultural Experiment Station staff, Home Demonstration Agents as well as the black 
