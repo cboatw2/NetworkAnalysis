@@ -85,6 +85,19 @@ nodes <- filtered_nodes_list %>%
 edges <- edges_list %>%
   rename(from = ID, to = ClemsonDepartment)
 
+# Check for missing `from` IDs
+#missing_from <- setdiff(edges$from, nodes$id)
+#print(missing_from)
+
+# Check for missing `to` IDs
+#missing_to <- setdiff(edges$to, nodes$id)
+#print(missing_to)
+
+if (length(missing_nodes) > 0) {
+  missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
+  nodes <- bind_rows(nodes, missing_nodes_df)
+}
+
 visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
   visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
   visNodes(size = 36, 
@@ -97,4 +110,16 @@ visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
 ```{r}
 duplicated_ids <- nodes$id[duplicated(nodes$id)]
 print(duplicated_ids)
+```
+
+```{r}
+missing_nodes <- setdiff(unique(c(edges$from, edges$to)), nodes$id)
+print(missing_nodes)
+```
+
+```{r}
+if (length(missing_nodes) > 0) {
+  missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
+  nodes <- bind_rows(nodes, missing_nodes_df)
+}
 ```
