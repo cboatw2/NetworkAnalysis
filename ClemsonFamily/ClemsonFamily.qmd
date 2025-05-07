@@ -17,7 +17,7 @@ library(visNetwork)
 ```
 
 ```{r, echo=FALSE}
-ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer3.csv") #load nodes list (entire Airtable dataset converted to .csv)
+ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") #load nodes list (entire Airtable dataset converted to .csv)
 ```
 
 ## Historical Context
@@ -289,16 +289,25 @@ edges <- edges_list %>%
 #print(missing_to)
 
 missing_nodes <- setdiff(unique(c(edges$from, edges$to)), nodes$id)
-print(missing_nodes)
-
+#print(missing_nodes)
 
 
 if (length(missing_nodes) > 0) {
+  # Create a data frame for missing nodes
   missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
-  #mutate(type = "department") %>% #add type column to missing_nodes_df and populate with "department"
+  
+  # Add a 'type' column with "department" for all rows
+  missing_nodes_df <- missing_nodes_df %>%
+    mutate(type = "department")
+  
+  # Bind the missing nodes to the existing nodes
   nodes <- bind_rows(nodes, missing_nodes_df)
 }
-print(nodes)
+
+#print(nodes)
+
+nodes <- nodes %>%
+  mutate(shape = if_else(type == "department", "triangle", "dot")) #adds shape column and assigns triangles to type "department"
 
 visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
   visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
