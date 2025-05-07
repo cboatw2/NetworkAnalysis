@@ -54,57 +54,385 @@ plot(dept_g,
     main = "Network of Shared Departments")
 ```
 
-```{r}
-#select column and filter nodes list to create edges list
-nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
-edges_list <- nodes_list %>%
-    select(ID, ClemsonDepartment) %>%
-    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
 
-#transform edges_list into a data.frame
-edges_list <- as.data.frame(edges_list)
+```{r, echo=FALSE}
+#Network of connectedness of individuals without showing campus housing or Woodland burial IN PROGRESS
 
-str(edges_list)
+#Create list of columns that represent connections between IDs
+connections <- c(
+  "FamilyPlotName", "ClemsonDepartment", "ChurchMembership",
+  "ProfessionalMembership1", "ProfessionalMembership2", "ProfessionalMembership3", "ClemsonAffliatedMembership1","ClemsonAffliatedMembership2", "ClemsonAffiliatedMembers3",
+  "SocialMembership1", "SocialMembership2", "SocialMembership3", "SocialMembership4",
+  "CivicMembership", "OtherMembership", "UndergraduateInstitution", "MastersInstitution", "PhDInstitution"
+)
+
+#Pivot data to long format
+affiliations_long <- ClemsonFamilyData %>%
+  select(ID, all_of(affiliation_cols)) %>%
+  pivot_longer(cols = -ID, names_to = "ConnectionType", values_to = "Group") %>%
+  filter(!is.na(Group) & Group != "") %>%
+  mutate(Group = str_trim(Group))
+
+#Create edge list showing connections between individuals in groups
+edges_all <- affiliations_long %>%
+  group_by(Group) %>%
+  summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
+  unnest(pairs) %>%
+  mutate(from = map_chr(pairs, 1),
+         to = map_chr(pairs, 2)) %>%
+  select(from, to, Group)
+
+# Optional: remove duplicated edges across multiple affiliations
+#edges_all_unique <- edges_all %>%
+  distinct(from, to)
+
+#Create node list with optional attributes (e.g., Department)
+nodes <- ClemsonFamilyData %>%
+  filter(ID %in% unique(c(edges_all_unique$from, edges_all_unique$to))) %>%
+  select(ID, ClemsonDepartment) %>%
+  rename(label = ID)
+
+g <- connections_graph(edges_all_unique, vertices = nodes, directed = FALSE)
+
+ggraph(g, layout = "fr") +
+  geom_edge_link(alpha = 0.3) +
+  geom_node_point(aes(color = ClemsonDepartment), size = 3) +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  theme_void() +
+  labs(title = "Network On and Off Campus Connections")
 ```
 
 ```{r}
-#filter nodes list
-filtered_nodes_list <- nodes_list %>%
-    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+#Network of everyone that lived in campus housing and is also buried in Woodland IN PROGRESS
 
-filtered_nodes_list <- as.data.frame(filtered_nodes_list)
+#Filter individuals
+housing <- ClemsonFamilyData %>% filter(ClemsonHousing == TRUE)
+burial <- ClemsonFamilyData %>% filter(WoodlandBurial == TRUE)
 
-str(filtered_nodes_list)
-```
-
-```{r}
-nodes <- filtered_nodes_list %>%
-    rename(id = ID) %>%
-    mutate(label = id)
-
-edges <- edges_list %>%
-  rename(from = ID, to = ClemsonDepartment)
-
-# Check for missing `from` IDs
-#missing_from <- setdiff(edges$from, nodes$id)
-#print(missing_from)
-
-# Check for missing `to` IDs
-#missing_to <- setdiff(edges$to, nodes$id)
-#print(missing_to)
-
-if (length(missing_nodes) > 0) {
-  missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
-  nodes <- bind_rows(nodes, missing_nodes_df)
+#Create edges
+create_edges <- function(data, label) {
+  combn(data$ID, 2, simplify = FALSE) %>%
+    map_df(~ tibble(from = .x[1], to = .x[2], group = label))
 }
 
-visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
-  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
+#Create edges for each group and combine
+edges_housing <- create_edges(housing, "ClemsonHousing")
+edges_burial <- create_edges(burial, "WoodlandBurial")
+
+edges <- bind_rows(edges_housing, edges_burial)
+
+#Create node list
+nodes <- ClemsonFamilyData %>%
+  filter(ID %in% unique(c(edges$from, edges$to))) %>%
+  select(ID, ClemsonHousing, WoodlandBurial) %>%
+  mutate(label = ID) %>%
+  distinct(ID, .keep_all = TRUE) # Ensure unique IDs
+
+
+edges <- edges %>% #Clean edges
+  filter(from %in% nodes$ID & to %in% nodes$ID) %>%
+  distinct(from, to, .keep_all = TRUE) # Remove duplicate edges
+
+worked_and_died_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
+
+#print(worked_and_died_graph)
+
+ggraph(worked_and_died_graph, layout = "fr") +
+  geom_edge_link(aes(color = group), alpha = 0.4) +
+  geom_node_point(aes(color = case_when(
+    ClemsonHousing == TRUE & WoodlandBurial == TRUE ~ "Both",
+    ClemsonHousing == TRUE ~ "Housing Only",
+    WoodlandBurial == TRUE ~ "Burial Only"
+  )), size = 3) +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  scale_edge_color_manual(values = c("ClemsonHousing" = "blue", "WoodlandBurial" = "green")) +
+  scale_color_manual(values = c("Housing Only" = "blue", "Burial Only" = "green", "Both" = "purple")) +
+  theme_void() +
+  labs(title = "Network of Individuals in Campus Housing and Cemetery")
+
+```
+
+```{r, echo=FALSE}
+#Simplified network of all individuals that lived in campus housing and was buried in Woodland
+#Filter individuals
+housing <- ClemsonFamilyData %>% filter(ClemsonHousing == TRUE) %>% slice(1:50)
+burial <- ClemsonFamilyData %>% filter(WoodlandBurial == TRUE) %>% slice(1:50)
+
+#Create edges
+create_edges <- function(data, label) {
+  combn(data$ID, 2, simplify = FALSE) %>%
+    map_df(~ tibble(from = .x[1], to = .x[2], group = label))
+}
+
+edges_housing <- create_edges(housing, "ClemsonHousing")
+edges_burial <- create_edges(burial, "WoodlandBurial")
+
+#Combine edges
+edges <- bind_rows(edges_housing, edges_burial) %>% slice(1:1000) # Limit edges
+
+#Create nodes
+nodes <- ClemsonFamilyData %>%
+  filter(ID %in% unique(c(edges$from, edges$to))) %>%
+  select(ID, ClemsonHousing, WoodlandBurial) %>%
+  mutate(label = ID) %>%
+  distinct(ID, .keep_all = TRUE)
+
+#Build graph
+worked_and_died_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
+
+#Plot graph
+ggraph(worked_and_died_graph, layout = "fr") +
+  geom_edge_link(aes(color = group), alpha = 0.4) +
+  geom_node_point(aes(color = case_when(
+    ClemsonHousing == TRUE & WoodlandBurial == TRUE ~ "Both",
+    ClemsonHousing == TRUE ~ "Housing Only",
+    WoodlandBurial == TRUE ~ "Burial Only"
+  )), size = 3) +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  scale_edge_color_manual(values = c("ClemsonHousing" = "blue", "WoodlandBurial" = "green")) +
+  scale_color_manual(values = c("Housing Only" = "blue", "Burial Only" = "green", "Both" = "purple")) +
+  theme_void() +
+  labs(title = "Network of Individuals in Campus Housing and Cemetery")
+```
+
+```{r, echo=FALSE}
+#Second attempt to build network of connectedness, not including Woodland or campus housing
+
+#Define columns representing connections
+connections <- c(
+  "ClemsonDepartment", "ChurchMembership", "CivicMembership",
+  "SocialMembership1"
+)
+
+connections_long <- ClemsonFamilyData %>%
+  select(ID, all_of(connections)) %>% #selects ID and connections columns as defined above
+  pivot_longer(cols = -ID, names_to = "ConnectionType", values_to = "Group") %>%
+  filter(!is.na(Group) & Group != "") %>%
+  mutate(Group = str_trim(Group))
+
+#Create edge list
+edges <- connections_long %>%
+  group_by(Group, ConnectionType) %>%
+  filter(n() > 1) %>% # Exclude groups with fewer than 2 members
+  summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
+  unnest(pairs) %>%
+  mutate(from = map_chr(pairs, 1),
+         to = map_chr(pairs, 2)) %>%
+  select(from, to, ConnectionType) %>%
+  distinct(from, to, ConnectionType) # Remove duplicate edges
+
+#Create node list
+nodes <- ClemsonFamilyData %>%
+  filter(ID %in% unique(c(edges$from, edges$to))) %>%
+  select(ID) %>%
+  rename(label = ID)
+
+connections_network <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
+
+ggraph(connections_network, layout = "fr") +
+  geom_edge_link(aes(color = ConnectionType), alpha = 0.5) +
+  geom_node_point(size = 3, color = "black") +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  scale_edge_color_manual(values = c(
+    "ClemsonDepartment" = "blue", "ChurchMembership" = "pink", "Civic Membership" = "red", "SocialMembership1" = "green"))
+```
+
+
+```{r, echo=FALSE}
+#Maually creating an edges list
+
+columns_to_filter <- c("FamilyPlotName", "ClemsonDepartment","OtherInstitution", "ProfessionalMembership1", "ProfessionalMembership2", "ProfessionalMembership3", "ClemsonAffiliatedMembership1", "ClemsonAffiliatedMembership2", "ClemsonAffiliatedMembership3", "ChurchMembership", "SocialMembership1", "SocialMembership2", "SocialMembership3", "SocialMembership4", "CivicMembership", "OtherMembership"
+)
+
+filtered_long_data <- ClemsonFamilyData %>%
+  select(ID, all_of(columns_to_filter)) %>% # Select only the relevant columns
+  pivot_longer(
+    cols = -ID, # Exclude the ID column from pivoting
+    names_to = "ConnectionType", # Name for the new column indicating the type of connection
+    values_to = "Group" # Name for the new column containing the group values
+  ) %>%
+  filter(!is.na(Group) & Group != "") %>% # Remove rows with missing or empty group values
+  mutate(Group = str_trim(Group)) # Clean up whitespace in the group values
+
+print(filtered_long_data)
+```
+
+```{r, echo=FALSE}
+#Creating network graph using ClemsonFamilyNodesListVer3 as nodes list and filtered_long_data as my edges list
+#load nodes list
+nodes <- ClemsonFamilyData %>%
+  select(ID, FamilyPlotName, ClemsonDepartment,OtherInstitution, ProfessionalMembership1, ProfessionalMembership2, ProfessionalMembership3, ClemsonAffiliatedMembership1, ClemsonAffiliatedMembership2, ClemsonAffiliatedMembership3, ChurchMembership, SocialMembership1, SocialMembership2, SocialMembership3, SocialMembership4, CivicMembership, OtherMembership)%>% 
+  rename(label = ID) %>% # Rename ID to label for compatibility
+  distinct() # Ensure unique nodes
+
+filtered_long_data <- as_tibble(filtered_long_data)
+
+#filtered_long_data into an edge list
+edges <- filtered_long_data %>%
+  group_by(Group) %>%
+  filter(n() > 1) %>% # Exclude groups with fewer than 2 members
+  summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
+  unnest(pairs) %>%
+  mutate(
+    from = map_chr(pairs, 1), 
+    to = map_chr(pairs, 2)   
+  ) %>%
+  select(from, to, ConnectionType = Group) %>% # Add ConnectionType for edge coloring
+  distinct(from, to, ConnectionType) # Remove duplicate edges
+
+
+network_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
+
+ggraph(network_graph, layout = "fr") +
+  geom_edge_link(aes(color = ConnectionType), alpha = 0.5) +
+  geom_node_point(size = 3, aes(color = ClemsonDepartment)) +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  scale_edge_color_manual(values = c(
+    "ClemsonDepartment" = "blue",
+    "ChurchMembership" = "red",
+    "CivicMembership" = "green",
+    "SocialMembership1" = "purple",
+    "SocialMembership2" = "orange",
+    "SocialMembership3" = "pink",
+    "SocialMembership4" = "brown"
+  )) +
+  theme_void() +
+  labs(title = "Network of Individuals by Shared Connections",
+       edge_color = "Connection Type",
+       node_color = "Department")
+```
+
+```{r, echo=FALSE}
+#trying visNetwork IN PROGRESS
+
+#load package
+
+
+#load .csv files
+nodes <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer3.csv", stringsAsFactors = FALSE)
+nodes <- as.data.frame(nodes)
+
+edges <- read.csv("ClemsonFamily_files/files/CFEdgesListVer2.csv", stringsAsFactors = FALSE) 
+edges <- as.data.frame(edges)
+
+#str(nodes) checking node structure
+#str(edges) checking edge structure
+#Create visualization
+
+nodes <- nodes %>% rename(id = ID) 
+
+#filter nodes where ClemsonDepartment is not empty or NA
+filtered_nodes <- nodes %>%
+  filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+#view the filtered nodes
+print(filtered_nodes)
+
+#remove rows with missing or empty IDs
+filtered_nodes <- filtered_nodes %>% filter(!is.na(id) & id != "")
+
+nodes$id <- as.character(nodes$id)
+edges$from <- as.character(edges$from)
+edges$to <- as.character(edges$to)
+
+#nodes <- nodes %>% distinct(id, .keep_all = TRUE)
+
+
+#edges <- edges %>% rename(from = ID, to = ClemsonDepartment)
+#print(nrow(edges)) 
+#edges <- edges %>%
+#  filter(from %in% nodes$id & to %in% nodes$id)
+#print(nrow(edges)) 
+
+
+#edges <- edges %>%
+#  filter(from %in% nodes$id & to %in% nodes$id)
+
+
+
+#missing_from <- setdiff(edges$from, nodes$id)
+#missing_to <- setdiff(edges$to, nodes$id)
+#print(missing_from)
+#print(missing_to)
+
+#print(unique(edges$to))
+#print(unique(nodes$id))
+
+edges$to <- str_replace_all(edges$to, '"', '')
+nodes$id <- gsub('"', '', nodes$id)
+
+edges <- edges %>%
+  filter(to != "" & to %in% nodes$id)
+
+#print(edges)
+
+visNetwork(nodes = nodes, edges = edges, height = 650, width = 1100) %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>% 
   visNodes(size = 36, 
-           font = list(size = 20)) %>%
-  visEdges(color = list(color = "gray", opacity = 0.5),
+           label = paste(nodes$id),
+           title = title,
+           font = list("size" = 20)) %>%
+  visEdges(color = list(color = edges$color, opacity = 0.2),
            hoverWidth = 20,
-           selectionWidth = 36)
+           selectionWidth = 36) 
+```
+
+
+```{r, echo=FALSE}
+#Building a network of church membership and clemson department connectedness IN PROGRESS
+
+church_network <- read.csv("ClemsonFamily_files/files/CFEdgesList.csv", stringsAsFactors = FALSE)
+
+cn_long <- church_network %>%
+  select(ID, ClemsonDepartment, ChurchMembership) %>%
+  pivot_longer(cols = c(ClemsonDepartment, ChurchMembership), 
+               names_to = "Type", 
+               values_to = "Group") %>%
+  filter(!is.na(Group) & Group != "") %>%
+  mutate(Group = str_trim(Group))
+
+edges <- df_long %>%
+  edges <- df_long %>%
+  group_by(Group) %>%
+  filter(n() > 1) %>% # Exclude groups with fewer than 2 members
+  reframe(pairs = combn(ID, 2, simplify = FALSE)) %>% 
+  unnest(pairs) %>%
+  mutate(
+    from = map_chr(pairs, 1), 
+    to = map_chr(pairs, 2)    
+  ) %>%
+  select(from, to, Group)
+
+
+edges_unique <- edges %>% distinct(from, to)
+
+nodes <- df %>%
+  filter(ID %in% unique(c(edges_unique$from, edges_unique$to))) %>%
+  select(ID, ClemsonDepartment, ChurchMembership) %>%
+  rename(label = ID)
+
+
+g <- graph_from_data_frame(edges_unique, vertices = nodes, directed = FALSE)
+
+
+ggraph(g, layout = "fr") +
+  geom_edge_link(alpha = 0.3) +
+  geom_node_point(color = "steelblue", size = 3) +
+  geom_node_text(aes(label = label), repel = TRUE, size = 3) +
+  theme_void() +
+  labs(title = "Network of Shared Department or Church Membership")
+
+```
+
+```{r, echo=FALSE}
+set_graph_style()
+
+# Load the edges list as a data frame
+edges <- read.csv("ClemsonFamily_files/files/CFEdgesListVer2.csv", stringsAsFactors = FALSE)
+
+# Check the structure of the data frame
+str(edges)
+
 ```
 
 ```{r}

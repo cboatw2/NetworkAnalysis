@@ -248,387 +248,68 @@ ggplot(clemson_degree_counts, aes(x = has_clemson_degree, y = n, fill = has_clem
 
 To understand the value of a Clemson degree for the men that would become members of the faculty and staff the two preceeding visualizations must work in tandem. While those who were deans without Clemson degrees outnumber those with Clemson degrees, at this time Clemson was only awarding bachelors degrees. (footnote: 1936 record) There may be multiple reasons that Clemson graduates were rising to higher ranks in the school namely, the focus on local agriculture as well as the military training. Possibly, the men coming into faculty and staff positions were more quickly adaptable to the systems and structure of Clemosn Agricultural College. Regardless, the tendency to hire and promote Clemson men over their colleges with degrees, and sometimes more advanced degrees, is a strong influencer in the Clemson Family network.
 
-```{r, echo=FALSE}
-#Network of connectedness of individuals without showing campus housing or Woodland burial IN PROGRESS
 
-#Create list of columns that represent connections between IDs
-connections <- c(
-  "FamilyPlotName", "ClemsonDepartment", "ChurchMembership",
-  "ProfessionalMembership1", "ProfessionalMembership2", "ProfessionalMembership3", "ClemsonAffliatedMembership1","ClemsonAffliatedMembership2", "ClemsonAffiliatedMembers3",
-  "SocialMembership1", "SocialMembership2", "SocialMembership3", "SocialMembership4",
-  "CivicMembership", "OtherMembership", "UndergraduateInstitution", "MastersInstitution", "PhDInstitution"
-)
+```{r}
+#select column and filter nodes list to create edges list
+nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
+edges_list <- nodes_list %>%
+    select(ID, ClemsonDepartment) %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
 
-#Pivot data to long format
-affiliations_long <- ClemsonFamilyData %>%
-  select(ID, all_of(affiliation_cols)) %>%
-  pivot_longer(cols = -ID, names_to = "ConnectionType", values_to = "Group") %>%
-  filter(!is.na(Group) & Group != "") %>%
-  mutate(Group = str_trim(Group))
+#transform edges_list into a data.frame
+edges_list <- as.data.frame(edges_list)
 
-#Create edge list showing connections between individuals in groups
-edges_all <- affiliations_long %>%
-  group_by(Group) %>%
-  summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
-  unnest(pairs) %>%
-  mutate(from = map_chr(pairs, 1),
-         to = map_chr(pairs, 2)) %>%
-  select(from, to, Group)
-
-# Optional: remove duplicated edges across multiple affiliations
-#edges_all_unique <- edges_all %>%
-  distinct(from, to)
-
-#Create node list with optional attributes (e.g., Department)
-nodes <- ClemsonFamilyData %>%
-  filter(ID %in% unique(c(edges_all_unique$from, edges_all_unique$to))) %>%
-  select(ID, ClemsonDepartment) %>%
-  rename(label = ID)
-
-g <- connections_graph(edges_all_unique, vertices = nodes, directed = FALSE)
-
-ggraph(g, layout = "fr") +
-  geom_edge_link(alpha = 0.3) +
-  geom_node_point(aes(color = ClemsonDepartment), size = 3) +
-  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
-  theme_void() +
-  labs(title = "Network On and Off Campus Connections")
+str(edges_list)
 ```
 
 ```{r}
-#Network of everyone that lived in campus housing and is also buried in Woodland IN PROGRESS
+#filter nodes list
+filtered_nodes_list <- nodes_list %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
 
-#Filter individuals
-housing <- ClemsonFamilyData %>% filter(ClemsonHousing == TRUE)
-burial <- ClemsonFamilyData %>% filter(WoodlandBurial == TRUE)
+filtered_nodes_list <- as.data.frame(filtered_nodes_list)
 
-#Create edges
-create_edges <- function(data, label) {
-  combn(data$ID, 2, simplify = FALSE) %>%
-    map_df(~ tibble(from = .x[1], to = .x[2], group = label))
-}
-
-#Create edges for each group and combine
-edges_housing <- create_edges(housing, "ClemsonHousing")
-edges_burial <- create_edges(burial, "WoodlandBurial")
-
-edges <- bind_rows(edges_housing, edges_burial)
-
-#Create node list
-nodes <- ClemsonFamilyData %>%
-  filter(ID %in% unique(c(edges$from, edges$to))) %>%
-  select(ID, ClemsonHousing, WoodlandBurial) %>%
-  mutate(label = ID) %>%
-  distinct(ID, .keep_all = TRUE) # Ensure unique IDs
-
-
-edges <- edges %>% #Clean edges
-  filter(from %in% nodes$ID & to %in% nodes$ID) %>%
-  distinct(from, to, .keep_all = TRUE) # Remove duplicate edges
-
-worked_and_died_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
-
-#print(worked_and_died_graph)
-
-ggraph(worked_and_died_graph, layout = "fr") +
-  geom_edge_link(aes(color = group), alpha = 0.4) +
-  geom_node_point(aes(color = case_when(
-    ClemsonHousing == TRUE & WoodlandBurial == TRUE ~ "Both",
-    ClemsonHousing == TRUE ~ "Housing Only",
-    WoodlandBurial == TRUE ~ "Burial Only"
-  )), size = 3) +
-  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
-  scale_edge_color_manual(values = c("ClemsonHousing" = "blue", "WoodlandBurial" = "green")) +
-  scale_color_manual(values = c("Housing Only" = "blue", "Burial Only" = "green", "Both" = "purple")) +
-  theme_void() +
-  labs(title = "Network of Individuals in Campus Housing and Cemetery")
-
+str(filtered_nodes_list)
 ```
 
-```{r, echo=FALSE}
-#Simplified network of all individuals that lived in campus housing and was buried in Woodland
-#Filter individuals
-housing <- ClemsonFamilyData %>% filter(ClemsonHousing == TRUE) %>% slice(1:50)
-burial <- ClemsonFamilyData %>% filter(WoodlandBurial == TRUE) %>% slice(1:50)
+```{r}
+nodes <- filtered_nodes_list %>%
+    rename(id = ID) %>%
+    mutate(label = id)
 
-#Create edges
-create_edges <- function(data, label) {
-  combn(data$ID, 2, simplify = FALSE) %>%
-    map_df(~ tibble(from = .x[1], to = .x[2], group = label))
-}
+edges <- edges_list %>%
+  rename(from = ID, to = ClemsonDepartment)
 
-edges_housing <- create_edges(housing, "ClemsonHousing")
-edges_burial <- create_edges(burial, "WoodlandBurial")
-
-#Combine edges
-edges <- bind_rows(edges_housing, edges_burial) %>% slice(1:1000) # Limit edges
-
-#Create nodes
-nodes <- ClemsonFamilyData %>%
-  filter(ID %in% unique(c(edges$from, edges$to))) %>%
-  select(ID, ClemsonHousing, WoodlandBurial) %>%
-  mutate(label = ID) %>%
-  distinct(ID, .keep_all = TRUE)
-
-#Build graph
-worked_and_died_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
-
-#Plot graph
-ggraph(worked_and_died_graph, layout = "fr") +
-  geom_edge_link(aes(color = group), alpha = 0.4) +
-  geom_node_point(aes(color = case_when(
-    ClemsonHousing == TRUE & WoodlandBurial == TRUE ~ "Both",
-    ClemsonHousing == TRUE ~ "Housing Only",
-    WoodlandBurial == TRUE ~ "Burial Only"
-  )), size = 3) +
-  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
-  scale_edge_color_manual(values = c("ClemsonHousing" = "blue", "WoodlandBurial" = "green")) +
-  scale_color_manual(values = c("Housing Only" = "blue", "Burial Only" = "green", "Both" = "purple")) +
-  theme_void() +
-  labs(title = "Network of Individuals in Campus Housing and Cemetery")
-```
-
-```{r, echo=FALSE}
-#Second attempt to build network of connectedness, not including Woodland or campus housing
-
-#Define columns representing connections
-connections <- c(
-  "ClemsonDepartment", "ChurchMembership", "CivicMembership",
-  "SocialMembership1"
-)
-
-connections_long <- ClemsonFamilyData %>%
-  select(ID, all_of(connections)) %>% #selects ID and connections columns as defined above
-  pivot_longer(cols = -ID, names_to = "ConnectionType", values_to = "Group") %>%
-  filter(!is.na(Group) & Group != "") %>%
-  mutate(Group = str_trim(Group))
-
-#Create edge list
-edges <- connections_long %>%
-  group_by(Group, ConnectionType) %>%
-  filter(n() > 1) %>% # Exclude groups with fewer than 2 members
-  summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
-  unnest(pairs) %>%
-  mutate(from = map_chr(pairs, 1),
-         to = map_chr(pairs, 2)) %>%
-  select(from, to, ConnectionType) %>%
-  distinct(from, to, ConnectionType) # Remove duplicate edges
-
-#Create node list
-nodes <- ClemsonFamilyData %>%
-  filter(ID %in% unique(c(edges$from, edges$to))) %>%
-  select(ID) %>%
-  rename(label = ID)
-
-connections_network <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
-
-ggraph(connections_network, layout = "fr") +
-  geom_edge_link(aes(color = ConnectionType), alpha = 0.5) +
-  geom_node_point(size = 3, color = "black") +
-  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
-  scale_edge_color_manual(values = c(
-    "ClemsonDepartment" = "blue", "ChurchMembership" = "pink", "Civic Membership" = "red", "SocialMembership1" = "green"))
-```
-
-
-```{r, echo=FALSE}
-#Maually creating an edges list
-
-columns_to_filter <- c("FamilyPlotName", "ClemsonDepartment","OtherInstitution", "ProfessionalMembership1", "ProfessionalMembership2", "ProfessionalMembership3", "ClemsonAffiliatedMembership1", "ClemsonAffiliatedMembership2", "ClemsonAffiliatedMembership3", "ChurchMembership", "SocialMembership1", "SocialMembership2", "SocialMembership3", "SocialMembership4", "CivicMembership", "OtherMembership"
-)
-
-filtered_long_data <- ClemsonFamilyData %>%
-  select(ID, all_of(columns_to_filter)) %>% # Select only the relevant columns
-  pivot_longer(
-    cols = -ID, # Exclude the ID column from pivoting
-    names_to = "ConnectionType", # Name for the new column indicating the type of connection
-    values_to = "Group" # Name for the new column containing the group values
-  ) %>%
-  filter(!is.na(Group) & Group != "") %>% # Remove rows with missing or empty group values
-  mutate(Group = str_trim(Group)) # Clean up whitespace in the group values
-
-print(filtered_long_data)
-```
-
-```{r, echo=FALSE}
-#Creating network graph using ClemsonFamilyNodesListVer3 as nodes list and filtered_long_data as my edges list
-#load nodes list
-nodes <- ClemsonFamilyData %>%
-  select(ID, FamilyPlotName, ClemsonDepartment,OtherInstitution, ProfessionalMembership1, ProfessionalMembership2, ProfessionalMembership3, ClemsonAffiliatedMembership1, ClemsonAffiliatedMembership2, ClemsonAffiliatedMembership3, ChurchMembership, SocialMembership1, SocialMembership2, SocialMembership3, SocialMembership4, CivicMembership, OtherMembership)%>% 
-  rename(label = ID) %>% # Rename ID to label for compatibility
-  distinct() # Ensure unique nodes
-
-filtered_long_data <- as_tibble(filtered_long_data)
-
-#filtered_long_data into an edge list
-edges <- filtered_long_data %>%
-  group_by(Group) %>%
-  filter(n() > 1) %>% # Exclude groups with fewer than 2 members
-  summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
-  unnest(pairs) %>%
-  mutate(
-    from = map_chr(pairs, 1), 
-    to = map_chr(pairs, 2)   
-  ) %>%
-  select(from, to, ConnectionType = Group) %>% # Add ConnectionType for edge coloring
-  distinct(from, to, ConnectionType) # Remove duplicate edges
-
-
-network_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
-
-ggraph(network_graph, layout = "fr") +
-  geom_edge_link(aes(color = ConnectionType), alpha = 0.5) +
-  geom_node_point(size = 3, aes(color = ClemsonDepartment)) +
-  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
-  scale_edge_color_manual(values = c(
-    "ClemsonDepartment" = "blue",
-    "ChurchMembership" = "red",
-    "CivicMembership" = "green",
-    "SocialMembership1" = "purple",
-    "SocialMembership2" = "orange",
-    "SocialMembership3" = "pink",
-    "SocialMembership4" = "brown"
-  )) +
-  theme_void() +
-  labs(title = "Network of Individuals by Shared Connections",
-       edge_color = "Connection Type",
-       node_color = "Department")
-```
-
-```{r, echo=FALSE}
-#trying visNetwork IN PROGRESS
-
-#load package
-
-
-#load .csv files
-nodes <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer3.csv", stringsAsFactors = FALSE)
-nodes <- as.data.frame(nodes)
-
-edges <- read.csv("ClemsonFamily_files/files/CFEdgesListVer2.csv", stringsAsFactors = FALSE) 
-edges <- as.data.frame(edges)
-
-#str(nodes) checking node structure
-#str(edges) checking edge structure
-#Create visualization
-
-nodes <- nodes %>% rename(id = ID) 
-
-#filter nodes where ClemsonDepartment is not empty or NA
-filtered_nodes <- nodes %>%
-  filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
-
-#view the filtered nodes
-print(filtered_nodes)
-
-#remove rows with missing or empty IDs
-filtered_nodes <- filtered_nodes %>% filter(!is.na(id) & id != "")
-
-nodes$id <- as.character(nodes$id)
-edges$from <- as.character(edges$from)
-edges$to <- as.character(edges$to)
-
-#nodes <- nodes %>% distinct(id, .keep_all = TRUE)
-
-
-#edges <- edges %>% rename(from = ID, to = ClemsonDepartment)
-#print(nrow(edges)) 
-#edges <- edges %>%
-#  filter(from %in% nodes$id & to %in% nodes$id)
-#print(nrow(edges)) 
-
-
-#edges <- edges %>%
-#  filter(from %in% nodes$id & to %in% nodes$id)
-
-
-
+# Check for missing `from` IDs
 #missing_from <- setdiff(edges$from, nodes$id)
-#missing_to <- setdiff(edges$to, nodes$id)
 #print(missing_from)
+
+# Check for missing `to` IDs
+#missing_to <- setdiff(edges$to, nodes$id)
 #print(missing_to)
 
-#print(unique(edges$to))
-#print(unique(nodes$id))
+missing_nodes <- setdiff(unique(c(edges$from, edges$to)), nodes$id)
+print(missing_nodes)
 
-edges$to <- str_replace_all(edges$to, '"', '')
-nodes$id <- gsub('"', '', nodes$id)
 
-edges <- edges %>%
-  filter(to != "" & to %in% nodes$id)
 
-#print(edges)
+if (length(missing_nodes) > 0) {
+  missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
+  nodes <- bind_rows(nodes, missing_nodes_df)
+}
 
-visNetwork(nodes = nodes, edges = edges, height = 650, width = 1100) %>%
-  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>% 
+visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
   visNodes(size = 36, 
-           label = paste(nodes$id),
-           title = title,
-           font = list("size" = 20)) %>%
-  visEdges(color = list(color = edges$color, opacity = 0.2),
+           font = list(size = 20)) %>%
+  visEdges(color = list(color = "gray", opacity = 0.5),
            hoverWidth = 20,
-           selectionWidth = 36) 
+           selectionWidth = 36)
 ```
 
 
 Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
-```{r, echo=FALSE}
-#Building a network of church membership and clemson department connectedness IN PROGRESS
-
-church_network <- read.csv("ClemsonFamily_files/files/CFEdgesList.csv", stringsAsFactors = FALSE)
-
-cn_long <- church_network %>%
-  select(ID, ClemsonDepartment, ChurchMembership) %>%
-  pivot_longer(cols = c(ClemsonDepartment, ChurchMembership), 
-               names_to = "Type", 
-               values_to = "Group") %>%
-  filter(!is.na(Group) & Group != "") %>%
-  mutate(Group = str_trim(Group))
-
-edges <- df_long %>%
-  edges <- df_long %>%
-  group_by(Group) %>%
-  filter(n() > 1) %>% # Exclude groups with fewer than 2 members
-  reframe(pairs = combn(ID, 2, simplify = FALSE)) %>% 
-  unnest(pairs) %>%
-  mutate(
-    from = map_chr(pairs, 1), 
-    to = map_chr(pairs, 2)    
-  ) %>%
-  select(from, to, Group)
-
-
-edges_unique <- edges %>% distinct(from, to)
-
-nodes <- df %>%
-  filter(ID %in% unique(c(edges_unique$from, edges_unique$to))) %>%
-  select(ID, ClemsonDepartment, ChurchMembership) %>%
-  rename(label = ID)
-
-
-g <- graph_from_data_frame(edges_unique, vertices = nodes, directed = FALSE)
-
-
-ggraph(g, layout = "fr") +
-  geom_edge_link(alpha = 0.3) +
-  geom_node_point(color = "steelblue", size = 3) +
-  geom_node_text(aes(label = label), repel = TRUE, size = 3) +
-  theme_void() +
-  labs(title = "Network of Shared Department or Church Membership")
-
-```
-
-```{r, echo=FALSE}
-set_graph_style()
-
-# Load the edges list as a data frame
-edges <- read.csv("ClemsonFamily_files/files/CFEdgesListVer2.csv", stringsAsFactors = FALSE)
-
-# Check the structure of the data frame
-str(edges)
-
-```
 ## For Further Research
 
 There are hundreds of additional names listed in the 1936-37 Clemson Record, Catalog and Announcements. Instructors, Agricultural Experiment Station staff, Home Demonstration Agents as well as the black 
