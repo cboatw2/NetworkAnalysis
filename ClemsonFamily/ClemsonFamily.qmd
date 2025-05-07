@@ -295,8 +295,10 @@ print(missing_nodes)
 
 if (length(missing_nodes) > 0) {
   missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
+  #mutate(type = "department") %>% #add type column to missing_nodes_df and populate with "department"
   nodes <- bind_rows(nodes, missing_nodes_df)
 }
+print(nodes)
 
 visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
   visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
@@ -307,7 +309,15 @@ visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
            selectionWidth = 36)
 ```
 
+```{r}
+#transform nodes list to add column differentiating between department and people
+missing_nodes_df <- data.frame(id = missing_nodes)
 
+missing_nodes_df <- missing_nodes_df %>%
+  mutate(type = "Department")
+
+
+```
 Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
 ## For Further Research
