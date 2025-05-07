@@ -12,6 +12,7 @@ library(igraph)
 library(tidygraph)
 library(ggraph)
 library(readr)
+library(dplyr)
 library(visNetwork)
 ```
 
@@ -115,7 +116,7 @@ Create graph and add department as node attribute
 campus_residents_graph <- as_tbl_graph(edges_clique, directed = FALSE) %>%
   left_join(campus_residents, by = c("name" = "ID")) 
 
-# 4. Plot the network, color by department
+#Plot the network, color by department
 ggraph(campus_residents_graph, layout = "fr") +
   geom_edge_link(color = "gray80", alpha = 0.5) +
   geom_node_point(aes(color = DepartmentPrimary), size = 5) +
@@ -148,20 +149,19 @@ ggraph(campus_residents_graph, layout = "fr") +
 To futher examine the layers of connections between individual it is helpful to examine the institutions where they received their degrees before coming to Clemson.
 
 ```{r, echo=FALSE}
-# 1. Combine all degree institutions into one long-format column
+#Create a bar graph illustrating number of degrees received by Clemson faculty (ungrouped by degree type)
 degree_institutions <- ClemsonFamilyData %>%
   select(UndergraduateInstitution, MastersInstitution, PhDInstitution) %>%
   pivot_longer(cols = everything(), names_to = "DegreeLevel", values_to = "Institution") %>%
   filter(!is.na(Institution) & Institution != "") %>%
   mutate(Institution = str_trim(Institution))
 
-# 2. Count how many times each institution appears
+#count how many times each institution appears
 institution_counts <- degree_institutions %>%
   group_by(Institution) %>%
   summarise(Count = n()) %>%
   arrange(desc(Count))
 
-# 3. Plot bar graph
 ggplot(institution_counts, aes(x = reorder(Institution, Count), y = Count)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   coord_flip() +
@@ -176,12 +176,12 @@ ggplot(institution_counts, aes(x = reorder(Institution, Count), y = Count)) +
 It's no suprise that so many of the employees received degrees from Clemson. To futher illustrate these connections further, however, it is helpful to see what levels of degrees came from which institutions:
 
 ```{r, echo=FALSE}
-# 1. Reshape the data
+#Create a bar graph illustrating number of degrees received by Clemson faculty (grouped by degree type)
 degree_data <- ClemsonFamilyData %>%
   select(UndergraduateInstitution, MastersInstitution, PhDInstitution) %>%
   pivot_longer(cols = everything(),
-               names_to = "DegreeLevel",
-               values_to = "Institution") %>%
+        names_to = "DegreeLevel",
+        values_to = "Institution") %>%
   filter(!is.na(Institution) & Institution != "") %>%
   mutate(
     Institution = str_trim(Institution),
@@ -192,18 +192,17 @@ degree_data <- ClemsonFamilyData %>%
     DegreeLevel = factor(DegreeLevel, levels = c("Undergraduate", "Masters", "PhD"))
   )
 
-# 2. Count and rank institutions within each degree level
+#count institutions in each degree level
 institution_counts_by_level <- degree_data %>%
   group_by(DegreeLevel, Institution) %>%
   summarise(Count = n(), .groups = "drop")
 
-# 3. Order institutions by count within each degree level
+#order institutions number of degrees received
 institution_counts_by_level <- institution_counts_by_level %>%
   group_by(DegreeLevel) %>%
   mutate(Institution = fct_reorder(Institution, Count)) %>%
   ungroup()
 
-# 4. Plot
 ggplot(institution_counts_by_level, aes(x = Institution, y = Count, fill = DegreeLevel)) +
   geom_bar(stat = "identity") +
   facet_wrap(~ DegreeLevel, scales = "free") +
@@ -218,12 +217,12 @@ ggplot(institution_counts_by_level, aes(x = Institution, y = Count, fill = Degre
 ```
 
 ```{r, echo=FALSE}
-# 1. Filter individuals who were deans
-deans <- ClemsonFamilyData %>%
+#create bar graph of deans according to degrees received Clemson or another institution. This has to count across all degree fields as many of the deans did not receive PhD according to the 1936 Record
+
+deans <- ClemsonFamilyData %>% #Filter individuals who were deans
   filter(str_detect(ClemsonDepartmentNotes, regex("dean", ignore_case = TRUE)))
 
-# 2. Check for Clemson degrees across any level
-deans_with_clemson_degree <- deans %>%
+deans_with_clemson_degree <- deans %>% #Check for Clemson degrees across any level
   mutate(
     has_clemson_degree = if_else(
       str_detect(UndergraduateInstitution, regex("clemson", ignore_case = TRUE)) |
@@ -233,11 +232,9 @@ deans_with_clemson_degree <- deans %>%
     )
   )
 
-# 3. Count how many deans have Clemson degrees
-clemson_degree_counts <- deans_with_clemson_degree %>%
+clemson_degree_counts <- deans_with_clemson_degree %>% #Count how many deans have Clemson degrees
   count(has_clemson_degree)
 
-# 4. Bar plot
 ggplot(clemson_degree_counts, aes(x = has_clemson_degree, y = n, fill = has_clemson_degree)) +
   geom_col(show.legend = FALSE) +
   labs(
@@ -288,10 +285,8 @@ nodes <- ClemsonFamilyData %>%
   select(ID, ClemsonDepartment) %>%
   rename(label = ID)
 
-#Build graph
 g <- connections_graph(edges_all_unique, vertices = nodes, directed = FALSE)
 
-# 6. Plot
 ggraph(g, layout = "fr") +
   geom_edge_link(alpha = 0.3) +
   geom_node_point(aes(color = ClemsonDepartment), size = 3) +
@@ -307,38 +302,34 @@ ggraph(g, layout = "fr") +
 housing <- ClemsonFamilyData %>% filter(ClemsonHousing == TRUE)
 burial <- ClemsonFamilyData %>% filter(WoodlandBurial == TRUE)
 
-# 2. Create edges: link all individuals in the same group (clique-style edges)
+#Create edges
 create_edges <- function(data, label) {
   combn(data$ID, 2, simplify = FALSE) %>%
     map_df(~ tibble(from = .x[1], to = .x[2], group = label))
 }
 
-# 3. Create edges for each group
+#Create edges for each group and combine
 edges_housing <- create_edges(housing, "ClemsonHousing")
 edges_burial <- create_edges(burial, "WoodlandBurial")
 
-# 4. Combine edges
 edges <- bind_rows(edges_housing, edges_burial)
 
-# 5. Create node list with attributes
+#Create node list
 nodes <- ClemsonFamilyData %>%
   filter(ID %in% unique(c(edges$from, edges$to))) %>%
   select(ID, ClemsonHousing, WoodlandBurial) %>%
   mutate(label = ID) %>%
   distinct(ID, .keep_all = TRUE) # Ensure unique IDs
 
-# 6. Clean edges
-edges <- edges %>%
+
+edges <- edges %>% #Clean edges
   filter(from %in% nodes$ID & to %in% nodes$ID) %>%
   distinct(from, to, .keep_all = TRUE) # Remove duplicate edges
 
-# 7. Build graph
 worked_and_died_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
 
-# 8. Print the graph
 #print(worked_and_died_graph)
 
-# 7. Plot the network
 ggraph(worked_and_died_graph, layout = "fr") +
   geom_edge_link(aes(color = group), alpha = 0.4) +
   geom_node_point(aes(color = case_when(
@@ -406,14 +397,13 @@ connections <- c(
   "SocialMembership1"
 )
 
-#Pivot data to long format
 connections_long <- ClemsonFamilyData %>%
-  select(ID, all_of(connections)) %>%
+  select(ID, all_of(connections)) %>% #selects ID and connections columns as defined above
   pivot_longer(cols = -ID, names_to = "ConnectionType", values_to = "Group") %>%
   filter(!is.na(Group) & Group != "") %>%
   mutate(Group = str_trim(Group))
 
-#Create edge list from connections
+#Create edge list
 edges <- connections_long %>%
   group_by(Group, ConnectionType) %>%
   filter(n() > 1) %>% # Exclude groups with fewer than 2 members
@@ -424,16 +414,14 @@ edges <- connections_long %>%
   select(from, to, ConnectionType) %>%
   distinct(from, to, ConnectionType) # Remove duplicate edges
 
-# 4. Create node list
+#Create node list
 nodes <- ClemsonFamilyData %>%
   filter(ID %in% unique(c(edges$from, edges$to))) %>%
   select(ID) %>%
   rename(label = ID)
 
-# 5. Build graph
 connections_network <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
 
-# 6. Plot the network
 ggraph(connections_network, layout = "fr") +
   geom_edge_link(aes(color = ConnectionType), alpha = 0.5) +
   geom_node_point(size = 3, color = "black") +
@@ -449,7 +437,6 @@ ggraph(connections_network, layout = "fr") +
 columns_to_filter <- c("FamilyPlotName", "ClemsonDepartment","OtherInstitution", "ProfessionalMembership1", "ProfessionalMembership2", "ProfessionalMembership3", "ClemsonAffiliatedMembership1", "ClemsonAffiliatedMembership2", "ClemsonAffiliatedMembership3", "ChurchMembership", "SocialMembership1", "SocialMembership2", "SocialMembership3", "SocialMembership4", "CivicMembership", "OtherMembership"
 )
 
-# Filter and pivot the data to long format
 filtered_long_data <- ClemsonFamilyData %>%
   select(ID, all_of(columns_to_filter)) %>% # Select only the relevant columns
   pivot_longer(
@@ -473,23 +460,22 @@ nodes <- ClemsonFamilyData %>%
 
 filtered_long_data <- as_tibble(filtered_long_data)
 
-# Transform filtered_long_data into an edge list
+#filtered_long_data into an edge list
 edges <- filtered_long_data %>%
   group_by(Group) %>%
   filter(n() > 1) %>% # Exclude groups with fewer than 2 members
   summarise(pairs = combn(ID, 2, simplify = FALSE), .groups = "drop") %>%
   unnest(pairs) %>%
   mutate(
-    from = map_chr(pairs, 1), # Extract the first element of each pair
-    to = map_chr(pairs, 2)    # Extract the second element of each pair
+    from = map_chr(pairs, 1), 
+    to = map_chr(pairs, 2)   
   ) %>%
   select(from, to, ConnectionType = Group) %>% # Add ConnectionType for edge coloring
   distinct(from, to, ConnectionType) # Remove duplicate edges
 
-# Build the graph
+
 network_graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
 
-# Plot the network
 ggraph(network_graph, layout = "fr") +
   geom_edge_link(aes(color = ConnectionType), alpha = 0.5) +
   geom_node_point(size = 3, aes(color = ClemsonDepartment)) +
@@ -526,25 +512,52 @@ edges <- as.data.frame(edges)
 #str(edges) checking edge structure
 #Create visualization
 
-# Rename the ID column in nodes if necessary
-nodes <- nodes %>% rename(id = ID) # Replace `ID` with the actual column name
+nodes <- nodes %>% rename(id = ID) 
 
-# Remove rows with missing or empty IDs
-nodes <- nodes %>% filter(!is.na(id) & id != "")
+#filter nodes where ClemsonDepartment is not empty or NA
+filtered_nodes <- nodes %>%
+  filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+#view the filtered nodes
+print(filtered_nodes)
+
+#remove rows with missing or empty IDs
+filtered_nodes <- filtered_nodes %>% filter(!is.na(id) & id != "")
 
 nodes$id <- as.character(nodes$id)
 edges$from <- as.character(edges$from)
 edges$to <- as.character(edges$to)
 
-nodes <- nodes %>% distinct(id, .keep_all = TRUE)
+#nodes <- nodes %>% distinct(id, .keep_all = TRUE)
 
 
-edges <- edges %>% rename(from = ID, to = ClemsonDepartment)
+#edges <- edges %>% rename(from = ID, to = ClemsonDepartment)
+#print(nrow(edges)) 
+#edges <- edges %>%
+#  filter(from %in% nodes$id & to %in% nodes$id)
+#print(nrow(edges)) 
+
+
+#edges <- edges %>%
+#  filter(from %in% nodes$id & to %in% nodes$id)
+
+
+
+#missing_from <- setdiff(edges$from, nodes$id)
+#missing_to <- setdiff(edges$to, nodes$id)
+#print(missing_from)
+#print(missing_to)
+
+#print(unique(edges$to))
+#print(unique(nodes$id))
+
+edges$to <- str_replace_all(edges$to, '"', '')
+nodes$id <- gsub('"', '', nodes$id)
 
 edges <- edges %>%
-  filter(from %in% nodes$id & to %in% nodes$id)
+  filter(to != "" & to %in% nodes$id)
 
-print(edges)
+#print(edges)
 
 visNetwork(nodes = nodes, edges = edges, height = 650, width = 1100) %>%
   visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>% 
@@ -561,13 +574,11 @@ visNetwork(nodes = nodes, edges = edges, height = 650, width = 1100) %>%
 Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
 ```{r, echo=FALSE}
-#Building a network of church membership and clemson department connectedness
+#Building a network of church membership and clemson department connectedness IN PROGRESS
 
-# Assume your dataset is already loaded into a data frame called `df`
-df <- read.csv("ClemsonFamily_files/files/CFEdgesList.csv", stringsAsFactors = FALSE)
+church_network <- read.csv("ClemsonFamily_files/files/CFEdgesList.csv", stringsAsFactors = FALSE)
 
-# 1. Reshape to long format
-df_long <- df %>%
+cn_long <- church_network %>%
   select(ID, ClemsonDepartment, ChurchMembership) %>%
   pivot_longer(cols = c(ClemsonDepartment, ChurchMembership), 
                names_to = "Type", 
@@ -575,32 +586,30 @@ df_long <- df %>%
   filter(!is.na(Group) & Group != "") %>%
   mutate(Group = str_trim(Group))
 
-# 2. Create edge list: connect people who share the same Group
 edges <- df_long %>%
   edges <- df_long %>%
   group_by(Group) %>%
   filter(n() > 1) %>% # Exclude groups with fewer than 2 members
-  reframe(pairs = combn(ID, 2, simplify = FALSE)) %>% # Use reframe instead of summarise
+  reframe(pairs = combn(ID, 2, simplify = FALSE)) %>% 
   unnest(pairs) %>%
   mutate(
-    from = map_chr(pairs, 1), # Extract the first element of each pair
-    to = map_chr(pairs, 2)    # Extract the second element of each pair
+    from = map_chr(pairs, 1), 
+    to = map_chr(pairs, 2)    
   ) %>%
   select(from, to, Group)
 
-# Optional: remove duplicates
+
 edges_unique <- edges %>% distinct(from, to)
 
-# 3. Prepare node attributes
 nodes <- df %>%
   filter(ID %in% unique(c(edges_unique$from, edges_unique$to))) %>%
   select(ID, ClemsonDepartment, ChurchMembership) %>%
   rename(label = ID)
 
-# 4. Create graph
+
 g <- graph_from_data_frame(edges_unique, vertices = nodes, directed = FALSE)
 
-# 5. Plot
+
 ggraph(g, layout = "fr") +
   geom_edge_link(alpha = 0.3) +
   geom_node_point(color = "steelblue", size = 3) +

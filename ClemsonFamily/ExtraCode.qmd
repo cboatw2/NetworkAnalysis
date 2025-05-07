@@ -29,8 +29,8 @@ CFD_long <- ClemsonFamilyData %>%
 #Join by ClemsonDepartment to identify relationships
 dept_edges <- CFD_long %>%
     select(ID, ClemsonDepartment) %>%
-    inner_join(CFD_long, by = c("ClemsonDepartment")) %>% #identifies matching departments to create relationships
-    filter(ID.x < ID.y) %>% #avoids duplicates created by making data long
+    inner_join(CFD_long, by = c("ClemsonDepartment")) %>% 
+    filter(ID.x < ID.y) %>% 
     select(source = ID.x, target = ID.y, ClemsonDepartment) %>%
     distinct()
 
