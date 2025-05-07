@@ -451,3 +451,13 @@ if (length(missing_nodes) > 0) {
   nodes <- bind_rows(nodes, missing_nodes_df)
 }
 ```
+
+```{r}
+#transform nodes list to add column differentiating between department and people
+missing_nodes_df <- data.frame(id = missing_nodes)
+
+missing_nodes_df <- missing_nodes_df %>%
+  mutate(type = "Department")
+
+
+```

@@ -307,7 +307,9 @@ if (length(missing_nodes) > 0) {
 #print(nodes)
 
 nodes <- nodes %>%
-  mutate(shape = if_else(type == "department", "triangle", "dot")) #adds shape column and assigns triangles to type "department"
+  mutate(shape = 
+    if_else(type == "department", "triangle", "dot")
+  ) #adds shape column and assigns triangles to type "department"
 
 visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
   visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
@@ -318,15 +320,175 @@ visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
            selectionWidth = 36)
 ```
 
-```{r}
-#transform nodes list to add column differentiating between department and people
-missing_nodes_df <- data.frame(id = missing_nodes)
+This network is based primarily on the 1936 Record book. It shows the clusters around departments. To futher view their connectedness we add in an additional variable of campus housing.
 
-missing_nodes_df <- missing_nodes_df %>%
-  mutate(type = "Department")
+```{r, echo=FALSE}
+#Modify the department visualization to show which people lived in campus housing
+nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
+edges_list <- nodes_list %>%
+    select(ID, ClemsonDepartment) %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+    filtered_nodes_list <- nodes_list %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+filtered_nodes_list <- as.data.frame(filtered_nodes_list)
+
+#str(housing_filtered_nodes_list)
+
+nodes <- filtered_nodes_list %>%
+    rename(id = ID) %>%
+    mutate(label = id)
+
+edges <- edges_list %>%
+  rename(from = ID, to = ClemsonDepartment)
+
+# Check for missing `from` IDs
+#missing_from <- setdiff(edges$from, nodes$id)
+#print(missing_from)
+
+# Check for missing `to` IDs
+#missing_to <- setdiff(edges$to, nodes$id)
+#print(missing_to)
+
+missing_nodes <- setdiff(unique(c(edges$from, edges$to)), nodes$id)
+#print(missing_nodes)
 
 
+if (length(missing_nodes) > 0) {
+  # Create a data frame for missing nodes
+  missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
+  
+  # Add a 'type' column with "department" for all rows
+  missing_nodes_df <- missing_nodes_df %>%
+    mutate(type = "department")
+  
+  # Bind the missing nodes to the existing nodes
+  nodes <- bind_rows(nodes, missing_nodes_df)
+}
+
+#print(nodes)
+
+nodes <- nodes %>%
+  mutate(shape = if_else(type == "department", "triangle", "dot"))
+
+  nodes <- nodes %>%
+  mutate(color = if_else(ClemsonHousing == TRUE, "orange", "blue")) # Assign colors based on ClemsonHousing #adds shape column and assigns triangles to type "department"
+
+visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
+  visNodes(size = 36, 
+           font = list(size = 20)) %>%
+  visEdges(color = list(color = "gray", opacity = 0.5),
+           hoverWidth = 20,
+           selectionWidth = 36)
 ```
+
+```{r, echo=FALSE}
+#Modify the department/campus housing visualization to show which people are buried at Woodland
+nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
+edges_list <- nodes_list %>%
+    select(ID, ClemsonDepartment) %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+    filtered_nodes_list <- nodes_list %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+filtered_nodes_list <- as.data.frame(filtered_nodes_list)
+
+#str(housing_filtered_nodes_list)
+
+nodes <- filtered_nodes_list %>%
+    rename(id = ID) %>%
+    mutate(label = id)
+
+edges <- edges_list %>%
+  rename(from = ID, to = ClemsonDepartment)
+
+# Check for missing `from` IDs
+#missing_from <- setdiff(edges$from, nodes$id)
+#print(missing_from)
+
+# Check for missing `to` IDs
+#missing_to <- setdiff(edges$to, nodes$id)
+#print(missing_to)
+
+missing_nodes <- setdiff(unique(c(edges$from, edges$to)), nodes$id)
+#print(missing_nodes)
+
+
+if (length(missing_nodes) > 0) {
+  # Create a data frame for missing nodes
+  missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
+  
+  # Add a 'type' column with "department" for all rows
+  missing_nodes_df <- missing_nodes_df %>%
+    mutate(type = "department")
+  
+  # Bind the missing nodes to the existing nodes
+  nodes <- bind_rows(nodes, missing_nodes_df)
+}
+
+#print(nodes)
+
+nodes <- nodes %>%
+  mutate(shape = if_else(type == "department", "triangle", "dot"), 
+  if_else(WoodlandBurial == "TRUE", "star", "dot"))
+
+  nodes <- nodes %>%
+  mutate(color = if_else(ClemsonHousing == TRUE, "orange", "blue")) # Assign colors based on ClemsonHousing #adds shape column and assigns triangles to type "department"
+
+visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
+  visNodes(size = 36, 
+           font = list(size = 20)) %>%
+  visEdges(color = list(color = "gray", opacity = 0.5),
+           hoverWidth = 20,
+           selectionWidth = 36)
+```
+
+```{r, echo=FALSE}
+#Copilot's version of the above code (without color change)
+
+nodes <- filtered_nodes_list %>%
+  rename(id = ID) %>% # Rename ID to id for visNetwork
+  mutate(label = id)  # Add a label column for node labels
+
+edges <- edges_list %>%
+  rename(from = ID, to = ClemsonDepartment) # Rename columns for visNetwork
+
+# Check for missing nodes
+missing_nodes <- setdiff(unique(c(edges$from, edges$to)), nodes$id)
+
+if (length(missing_nodes) > 0) {
+  # Create a data frame for missing nodes
+  missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
+  
+  # Add a 'type' column with "department" for all rows
+  missing_nodes_df <- missing_nodes_df %>%
+    mutate(type = "department")
+  
+  # Bind the missing nodes to the existing nodes
+  nodes <- bind_rows(nodes, missing_nodes_df)
+}
+
+
+# Ensure all nodes have a 'type' column and handle missing values
+nodes <- nodes %>%
+  mutate(type = if_else(is.na(type), "person", type)) %>% # Replace NA in 'type' with "person"
+  mutate(shape = if_else(type == "department", "triangle", "dot")) %<% # Assign shapes based on type
+  #mutate(color = if_else(ClemsonHousing == TRUE, "orange", "blue")) # Assign colors based on ClemsonHousing
+
+# Create the network visualization
+visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
+  visNodes(size = 36, 
+           font = list(size = 20)) %>%
+  visEdges(color = list(color = "gray", opacity = 0.5),
+           hoverWidth = 20,
+           selectionWidth = 36)
+```
+
 Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
 ## For Further Research
