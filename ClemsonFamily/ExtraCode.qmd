@@ -53,3 +53,48 @@ plot(dept_g,
     vertex.color = "skyblue",
     main = "Network of Shared Departments")
 ```
+
+```{r}
+#select column and filter nodes list to create edges list
+nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
+edges_list <- nodes_list %>%
+    select(ID, ClemsonDepartment) %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+#transform edges_list into a data.frame
+edges_list <- as.data.frame(edges_list)
+
+str(edges_list)
+```
+
+```{r}
+#filter nodes list
+filtered_nodes_list <- nodes_list %>%
+    filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
+
+filtered_nodes_list <- as.data.frame(filtered_nodes_list)
+
+str(filtered_nodes_list)
+```
+
+```{r}
+nodes <- filtered_nodes_list %>%
+    rename(id = ID) %>%
+    mutate(label = id)
+
+edges <- edges_list %>%
+  rename(from = ID, to = ClemsonDepartment)
+
+visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
+  visNodes(size = 36, 
+           font = list(size = 20)) %>%
+  visEdges(color = list(color = "gray", opacity = 0.5),
+           hoverWidth = 20,
+           selectionWidth = 36)
+```
+
+```{r}
+duplicated_ids <- nodes$id[duplicated(nodes$id)]
+print(duplicated_ids)
+```
