@@ -461,3 +461,45 @@ missing_nodes_df <- missing_nodes_df %>%
 
 
 ```
+
+```{r, echo=FALSE}
+#Copilot's version of the dpeartment visualization code (without color change)
+
+nodes <- filtered_nodes_list %>%
+  rename(id = ID) %>% # Rename ID to id for visNetwork
+  mutate(label = id)  # Add a label column for node labels
+
+edges <- edges_list %>%
+  rename(from = ID, to = ClemsonDepartment) # Rename columns for visNetwork
+
+# Check for missing nodes
+missing_nodes <- setdiff(unique(c(edges$from, edges$to)), nodes$id)
+
+if (length(missing_nodes) > 0) {
+  # Create a data frame for missing nodes
+  missing_nodes_df <- data.frame(id = missing_nodes, label = missing_nodes)
+  
+  # Add a 'type' column with "department" for all rows
+  missing_nodes_df <- missing_nodes_df %>%
+    mutate(type = "department")
+  
+  # Bind the missing nodes to the existing nodes
+  nodes <- bind_rows(nodes, missing_nodes_df)
+}
+
+
+# Ensure all nodes have a 'type' column and handle missing values
+nodes <- nodes %>%
+  mutate(type = if_else(is.na(type), "person", type)) %>% # Replace NA in 'type' with "person"
+  mutate(shape = if_else(type == "department", "triangle", "dot")) %<% # Assign shapes based on type
+  #mutate(color = if_else(ClemsonHousing == TRUE, "orange", "blue")) # Assign colors based on ClemsonHousing
+
+# Create the network visualization
+visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
+  visNodes(size = 36, 
+           font = list(size = 20)) %>%
+  visEdges(color = list(color = "gray", opacity = 0.5),
+           hoverWidth = 20,
+           selectionWidth = 36)
+```
