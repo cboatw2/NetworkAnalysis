@@ -385,7 +385,7 @@ visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
 ```
 
 ```{r, echo=FALSE}
-#Modify the department/campus housing visualization to show which people are buried at Woodland
+#Modify the department/campus housing visualization to indicate people buried at Woodland
 nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
 edges_list <- nodes_list %>%
     select(ID, ClemsonDepartment) %>%
@@ -432,8 +432,8 @@ if (length(missing_nodes) > 0) {
 #print(nodes)
 
 nodes <- nodes %>%
-  mutate(shape = if_else(type == "department", "triangle", "dot"), 
-  if_else(WoodlandBurial == "TRUE", "star", "dot"))
+  mutate(shape = if_else(type == "department", "triangle", "dot",
+    if_else(WoodlandBurial == TRUE, "star", "dot")))
 
   nodes <- nodes %>%
   mutate(color = if_else(ClemsonHousing == TRUE, "orange", "blue")) # Assign colors based on ClemsonHousing #adds shape column and assigns triangles to type "department"
