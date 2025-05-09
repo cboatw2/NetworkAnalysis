@@ -13,6 +13,7 @@ library(tidygraph)
 library(ggraph)
 library(readr)
 library(dplyr)
+library(scales)
 library(visNetwork)
 ```
 
@@ -84,7 +85,7 @@ The following family names appear on the 1943 Clemson University Atlas:
 
 - *University buildings (not occupied by families)
 
-The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th, 2025 Rick Owens, Clemson's preservation officer, found a map of Clemson created by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map along with the Clemson Record, Catalog and Announcements for the 1936-1937 academic year are the foundational documents for this project and dataset.
+The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th, 2025 Rick Owens, Clemson's preservation officer, found a map of Clemson created by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map along with the Clemson Record, Catalog and Announcements for the 1936-1937 academic year are the foundational documents for this project and dataset. The reason for the large discrepancy between the number of names listed on the 1943 map and the 1936 atlas is that the map was printed in Taps and showed a partial map of main campus, according to Rick Owens.
 
 
 ## Layers of Connections
@@ -116,6 +117,12 @@ edges_clique <- t(combn(campus_residents$ID, 2)) %>% #create a fully connected n
 campus_residents_graph <- as_tbl_graph(edges_clique, directed = FALSE) %>%
   left_join(campus_residents, by = c("name" = "ID")) 
 
+unique_departments <- unique(campus_residents$DepartmentPrimary)
+num_departments <- length(unique_departments)
+
+department_colors <- hue_pal()(num_departments)
+names(department_colors) <- unique_departments
+
 #Plot the network, color by department
 ggraph(campus_residents_graph, layout = "fr") +
   geom_edge_link(color = "gray80", alpha = 0.5) +
@@ -123,28 +130,11 @@ ggraph(campus_residents_graph, layout = "fr") +
   geom_node_text(aes(label = name), repel = TRUE, size = 3) +
   theme_void() +
   ggtitle("Employees in Campus Housing") +
-  #labs(subtitle = "While this is a visually noisy graph because it is fully connected, it represents the weight of the connectedness of the lives of Clemson employees who also lived on campus") +
-  scale_color_viridis(option = "plasma", na.value = "transparent")
+  #labs(subtitle = "While this is a visually noisy graph because it is fully connected, it represents the weight of the connectedness of the lives of Clemson employees who also lived on campus")
+   scale_color_manual(values = department_colors, na.value = "black") # Use discrete color scale
   #facet_nodes(~DepartmentPrimary) #group nodes by department
 ```
 
-```{r, echo=FALSE}
-unique_departments <- unique(campus_residents$DepartmentPrimary)
-num_departments <- length(unique_departments)
-
-library(scales)
-department_colors <- hue_pal()(num_departments)
-
-names(department_colors) <- unique_departments
-
-ggraph(campus_residents_graph, layout = "fr") +
-    geom_edge_link(color = "gray80", alpha = 0.5) +
-  geom_node_point(aes(color = DepartmentPrimary), size = 5) +
-  geom_node_text(aes(label = name), repel = TRUE, size = 3) +
-  theme_void() +
-  ggtitle("Employees in Campus Housing") +
-  scale_color_manual(values = department_colors, na.value = "black")
-```
 
 To futher examine the layers of connections between individual it is helpful to examine the institutions where they received their degrees before coming to Clemson.
 
@@ -249,7 +239,7 @@ ggplot(clemson_degree_counts, aes(x = has_clemson_degree, y = n, fill = has_clem
 To understand the value of a Clemson degree for the men that would become members of the faculty and staff the two preceeding visualizations must work in tandem. While those who were deans without Clemson degrees outnumber those with Clemson degrees, at this time Clemson was only awarding bachelors degrees. (footnote: 1936 record) There may be multiple reasons that Clemson graduates were rising to higher ranks in the school namely, the focus on local agriculture as well as the military training. Possibly, the men coming into faculty and staff positions were more quickly adaptable to the systems and structure of Clemosn Agricultural College. Regardless, the tendency to hire and promote Clemson men over their colleges with degrees, and sometimes more advanced degrees, is a strong influencer in the Clemson Family network.
 
 
-```{r}
+```{r, echo=FALSE}
 #select column and filter nodes list to create edges list
 nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
 edges_list <- nodes_list %>%
@@ -262,7 +252,7 @@ edges_list <- as.data.frame(edges_list)
 str(edges_list)
 ```
 
-```{r}
+```{r, echo=FALSE}
 #filter nodes list
 filtered_nodes_list <- nodes_list %>%
     filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
@@ -272,7 +262,7 @@ filtered_nodes_list <- as.data.frame(filtered_nodes_list)
 str(filtered_nodes_list)
 ```
 
-```{r}
+```{r, echo=FALSE}
 nodes <- filtered_nodes_list %>%
     rename(id = ID) %>%
     mutate(label = id)
@@ -384,7 +374,7 @@ visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
            selectionWidth = 36)
 ```
 
-The final stage of the visualization indicates people buried at Woodland Cemetery. By adding this variable, change over time becomes visable. For the people who appear in the 1936 Record book as employees, there is often a lapse of 40 - 50 years before their death and internment in Woodland. This life-long commitment to Clemson is at the root of Clemson Family.
+The final stage of the visualization indicates people buried at Woodland Cemetery. By adding this variable, change over time becomes visable. For the people who appear in the 1936 Record book as employees, there is often a lapse of 40 - 50 years before their death and internment in Woodland. This life-long commitment to Clemson is a key component of Clemson Family.
 ```{r, echo=FALSE}
 #Modify the department/campus housing visualization to indicate people buried at Woodland
 nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
@@ -449,8 +439,29 @@ visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
 ```
 
 
-Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
+## Analysis
+
+The size of each department is indicative of the academic focus of the school during this period. 
+
+![1936 Record Book: Number of Students Majoring in Each Curriculum](images/CAC1936Enrollment.jpeg)
+
+The greatest number of students were majoring in "Engineering Unclas" with the next highest number majoring in Agriculture. The likely reason for the greater number of professor in the Agriculture Department is my decision to classify certain professors as "General Education" when their subject matter seemed likely to be taught across multiple disciplines. For example, a professor of mathematics could have taught in the School of Engineering, but may have also taught in the School of General Science or Architecture. I may be possible to further refine these classifications by examining each individual, or proceeding through the Record, Catalog and Announcement book to discover if certain professors are directly connected to a specific school.
+
+The addition of colors indicating whether an employee lived in campus housing or not begins to frame the concept of Clemson Family more discretely. That none of the members of the Board of Trustees or the Alumni Corporation Board of Directors lived in campus housing makes logical sense. As is the case today, the BOT and the Clemson Alumni Associate Board of Directors serve as external bodies of the university. They are typically residents of South Carolina, but rarely live in Clemson and almost always hold jobs outside of the university. These entities, therefore hold a unique role within the Clemson Family.
+
+Perhaps the most interesting cluster revolves around "Other Officers". These individuals are unqiue in several ways, chiefly because of the percentage of females listed. Also listed are the five campus religious leaders: John K. Goode, Baptist; Donald E. Veale, Episcopla; Sydney J. L. crouch, Presbyterian; Herbert Otto Chamebrs, Methodist; and Henry L. Spiesman, Catholic. **footnote with pg and female breakdown
+
+The most compelling evidence of the formation of Clemson Family and the centrality of Woodland Cemetery to its cohesion is the final visualization which indicates with stars the individuals that chose to be buried in the cemetery. The overwhelming number of stars are orange, meaning that these people had been residents in campus housing while working as facutly and staff in the mid-1930s. To contextualize this in individual lives, examine the years of death. These men and women and their families spent their entire lives on the grounds of Clemson Agricultural College and then chose those grounds as their eternal resting place. ***add hover option to nodes to show death year
+
+The tight interwoveness of these lives is visually evident by examining these networks. Men who shared classroom podiums, also shared backyard fences and now lie within yards or even feet of one another. Clemson Family became a physical reality when Walter Riggs conceived of a shared burial ground for those members of the faculty and staff who would remain and serve at Clemson.
+
 
 ## For Further Research
+
+Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
+
+```{r, echo=FALSE}
+
+```
 
 There are hundreds of additional names listed in the 1936-37 Clemson Record, Catalog and Announcements. Instructors, Agricultural Experiment Station staff, Home Demonstration Agents as well as the black 
