@@ -461,7 +461,74 @@ The tight interwoveness of these lives is visually evident by examining these ne
 Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
 
 ```{r, echo=FALSE}
+#Create edges list based on church affiliation
+church_nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
+church_edges_list <- church_nodes_list %>%
+    select(ID, ChurchMembership) %>%
+    filter(!is.na(ChurchMembership) & ChurchMembership != "")
 
+#transform edges_list into a data.frame
+church_edges_list <- as.data.frame(church_edges_list)
+
+str(church_edges_list)
+```
+
+```{r, echo=FALSE}
+#filter nodes list
+church_filtered_nodes_list <- church_nodes_list %>%
+    filter(!is.na(ChurchMembership) & ChurchMembership != "")
+
+church_filtered_nodes_list <- as.data.frame(church_filtered_nodes_list)
+
+str(church_filtered_nodes_list)
+```
+
+```{r, echo=FALSE}
+church_nodes <- church_filtered_nodes_list %>%
+    rename(id = ID) %>%
+    mutate(label = id)
+
+church_edges <- church_edges_list %>%
+  rename(from = ID, to = ChurchMembership)
+
+# Check for missing `from` IDs
+church_missing_from <- setdiff(church_edges$from, church_nodes$id)
+#print(church_missing_from)
+
+# Check for missing `to` IDs
+church_missing_to <- setdiff(church_edges$to, church_nodes$id)
+#print(church_missing_to)
+
+
+church_missing_nodes <- setdiff(unique(c(church_edges$from, church_edges$to)), church_nodes$id)
+#print(missing_nodes)
+
+
+if (length(church_missing_nodes) > 0) {
+  # Create a data frame for missing nodes
+  church_missing_nodes_df <- data.frame(id = church_missing_nodes, label = church_missing_nodes)
+  
+  # Add a 'type' column with "department" for all rows
+  church_missing_nodes_df <- church_missing_nodes_df %>%
+    mutate(type = "church")
+  
+  # Bind the missing nodes to the existing nodes
+  church_nodes <- bind_rows(church_nodes, church_missing_nodes_df)
+}
+
+print(church_nodes)
+
+
+church_nodes <- church_nodes %>%
+  mutate(shape = if_else(type == "church", "diamond", "dot")) #adds shape column and assigns a cross from FontAwesome to type "church"
+
+visNetwork(nodes = church_nodes, edges = church_edges, height = "650px", width = "1100px") %>%
+  visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
+  visNodes(size = 36, 
+           font = list(size = 20)) %>%
+  visEdges(color = list(color = "gray", opacity = 0.5),
+           hoverWidth = 20,
+           selectionWidth = 36)
 ```
 
 There are hundreds of additional names listed in the 1936-37 Clemson Record, Catalog and Announcements. Instructors, Agricultural Experiment Station staff, Home Demonstration Agents as well as the black 
