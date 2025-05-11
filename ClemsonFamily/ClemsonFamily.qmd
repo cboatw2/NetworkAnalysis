@@ -240,6 +240,7 @@ To understand the value of a Clemson degree for the men that would become member
 
 
 ```{r, echo=FALSE}
+
 #select column and filter nodes list to create edges list
 nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
 edges_list <- nodes_list %>%
@@ -249,10 +250,8 @@ edges_list <- nodes_list %>%
 #transform edges_list into a data.frame
 edges_list <- as.data.frame(edges_list)
 
-str(edges_list)
-```
+#str(edges_list)
 
-```{r, echo=FALSE}
 #filter nodes list
 filtered_nodes_list <- nodes_list %>%
     filter(!is.na(ClemsonDepartment) & ClemsonDepartment != "")
@@ -260,9 +259,7 @@ filtered_nodes_list <- nodes_list %>%
 filtered_nodes_list <- as.data.frame(filtered_nodes_list)
 
 str(filtered_nodes_list)
-```
 
-```{r, echo=FALSE}
 nodes <- filtered_nodes_list %>%
     rename(id = ID) %>%
     mutate(label = id)
