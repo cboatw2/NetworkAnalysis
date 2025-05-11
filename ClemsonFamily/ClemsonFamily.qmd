@@ -458,7 +458,7 @@ The tight interwoveness of these lives is visually evident by examining these ne
 
 ## For Further Research
 
-Other layers of connectedness could be explored. Such as individual's involvement in social and civil organizations. 
+Other layers of connectedness could be explore, such as individual's involvement in religious, social and civic organizations.
 
 ```{r, echo=FALSE}
 #Create edges list based on church affiliation
@@ -520,7 +520,7 @@ print(church_nodes)
 
 
 church_nodes <- church_nodes %>%
-  mutate(shape = if_else(type == "church", "diamond", "dot")) #adds shape column and assigns a cross from FontAwesome to type "church"
+  mutate(shape = if_else(type == "church", "diamond", "dot")) #adds shape column and assigns a diamond to type "church"
 
 visNetwork(nodes = church_nodes, edges = church_edges, height = "650px", width = "1100px") %>%
   visIgraphLayout(layout = "layout_with_fr", randomSeed = 12) %>%
@@ -530,5 +530,7 @@ visNetwork(nodes = church_nodes, edges = church_edges, height = "650px", width =
            hoverWidth = 20,
            selectionWidth = 36)
 ```
+
+Because the dataset is not as populated in regards to these organizations as compared to university departments, it is less reliable. However, based on known trends that exist even into the present day, more than likely the graph above would simply increase in size, but the 
 
 There are hundreds of additional names listed in the 1936-37 Clemson Record, Catalog and Announcements. Instructors, Agricultural Experiment Station staff, Home Demonstration Agents as well as the black 
