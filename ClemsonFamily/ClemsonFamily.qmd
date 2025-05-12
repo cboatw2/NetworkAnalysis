@@ -22,31 +22,31 @@ ClemsonFamilyData <- read_csv("ClemsonFamily_files/files/ClemsonFamilyNodesListV
 ```
 
 ## Historical Context
-In the pursuit of creating broad narratives and themes which account for large trends over long periods historians are often hard-pressed to spend time examining individual institutions or people. Increasingly, however, since the cultural and digital turns, personal narratives are often interjected into these larger narratives as a way to create more complete and inclusive histories. These inclusions provide human connections within larger themes of social, political and economic change. This project seeks to provide, not intricate details of lives that contributed to Clemson Agricultural College during the first half of the twentieth century, but rather a close examination of the connections between their lives.
+In the pursuit of creating broad narratives and themes which account for large trends over long periods historians are often hard-pressed to spend significant time or publication space examining individual institutions or people. Increasingly, however, since the cultural and digital turns, personal narratives are often interjected into these larger narratives as a way to create more complete and inclusive histories. These inclusions provide human connections within larger themes of social, political and economic change. This project focuse not on intricate or biographical details of the lives that contributed to Clemson Agricultural College during the first half of the twentieth century, but rather on the connections between their lives. This project is the beginning of an examination of the ubiquitous but rarely defined notion of Clemson Family.
 
-There exists a rich tradition of institutional histories in the historiography of higher education in the United States. Perhaps what sometimes falls through the cracks of historic scholarship are institutional histories done at a high, academic level. The reasons for this gap is may be expressed by Joseph Amago in *Rethinking Home* regarding his an other historians work with local histories. Often relagate to non-professional historians or historical societies, local histories fail to draw scholars because of the need for "commitment to the micro-landscapes in an era of macro foces" (Amato, 187). Amato calls for a new generation of historians who shed the need for systemization for a commitment to particular histories and who "reject overarching explantions for microhistories, instead staying tru to details, anecdotes, and peculiarities of place...they prefer case studies to academic theory". 
+There exists a rich and varied tradition of publications about institutional histories in the historiography of higher education in the United States. Perhaps what sometimes falls through the cracks of historic scholarship are institutional histories done at a high, academic level. Some reasons for this gap are articulated by Joseph Amago in *Rethinking Home*.[^1] Regarding his an other historians work with local and microhistories Amato observes that these works are often relagate to non-professional historians or historical societies because local histories fail to draw scholars because of the need for "commitment to the micro-landscapes in an era of macro foces". Amato calls for a new generation of historians who shed the need for systemization replaced by a commitment to particular histories and who "reject overarching explantions for microhistories, instead staying true to details, anecdotes, and peculiarities of place...they prefer case studies to academic theory".[^2]
 
-The history of Clemson University has been written in many ways and for various purposes throughout the years. Jerry Reel who has written what is perhaps the seminal history of Clemson University in the *High Seminary* volumes follows the well-worn tradition of emeritus scholars writing about their institutional homes. Reel's careful examination of the Board of Trustees, presidents, football program highlights, and the development of the physical spaces of the university provide alumni and fans the opportunity to learn about the decisions and directions that created Clemson University as it exists today. While Dr. Reel has contributed to the telling of Clemson's history from a scholarly standpoint, a cursory glance at the majority of the published histories reveal that football and personal experiences as students still largely dominate the literature. 
+The history of Clemson University has been written in many ways and for various purposes throughout the years. Jerry Reel who has written what is perhaps the seminal history of Clemson University in the *High Seminary* volumes follows the well-worn tradition of emeritus scholars writing about their institutional homes. Reel's careful examination of the Board of Trustees, presidents, football program highlights, and the development of the physical spaces of the university provide alumni and fans the opportunity to learn about the decisions and directions that created Clemson University as it exists today.[^3] While Dr. Reel has contributed to the telling of Clemson's history from a scholarly standpoint, a cursory glance at the majority of the published histories reveal that football and personal experiences as students still largely dominate the literature.[^4] While wonderful for fans and alumni, these book do little to position Clemson within the larger themes of southern, race, gender or other widely accepted themes of scholarship. 
 
-While wonderful for fans and alumni, these book do little to position Clemson within the larger themes of southern, race, gender or other widely accepted themes of scholarship. The confirmation of unmarked African American burials at Cemetery Hill in 2020 and the resulting publications by Dr. Rhondda Thomas have greatly expanded Clemson's history, especially in regards to race. Thomas' scholarly efforts in *Call My Name* and *Rhetoric, Public Memory, and Campus History* illuminate the entirety of Clemson's history reaching into is antebellum past as a plantation powered by unfree African American labor, to the postbellum construction of college buildings by mostly black convicts lessed to Clemson Agricultural College by the state of South Carolina.
+The confirmation of unmarked African American burials at Cemetery Hill in 2020 and the resulting publications by Dr. Rhondda Thomas have greatly expanded Clemson's history, especially in regards to race. Dr. Thomas' scholarly efforts in *Call My Name* and *Rhetoric, Public Memory, and Campus History* illuminate the entirety of Clemson's history reaching into is antebellum past as a plantation powered by unfree African American labor, through the postbellum construction of college buildings by black convicts leased to Clemson Agricultural College by the state of South Carolina.[^5]
 
-What is perhaps still developing in the history of Clemson are the connections between the various communities. The beautiful new gate installed at the entrance of Cemetery Hill represents the current phase of the project and on-going research initatives part of which is beginning to try and understand the interactions and influences of the various communtities with and on one another. Three ribbons wind their way through the bottom of the gates symbolizing each of the three burial grounds at Cemetery Hill: the original Andrew P. Calhoun plot, the African American burial ground, and Woodland Cemetery. The ribbons symbolize the threads of narrative that occur so visably at Cemetery Hill and that so many historians have worked so hard to tell since the cultural turn.
+What is perhaps still developing in the history of Clemson are the connections between the various communities represented on Cemetery Hill and in other ways through the university's history. There is an effort underway to begin to try and understand the interactions and influences of the various communtities with and on one another. The beautiful new gate installed at the entrance of Cemetery Hill represents the current phase of the project and on-going research initatives. Three ribbons wind their way through the bottom of the gates each symbolizing one of the three burial grounds at Cemetery Hill: the original Andrew P. Calhoun plot, the African American burial ground, and Woodland Cemetery. The ribbons symbolize the threads of narrative that occur so visably at Cemetery Hill and point our research toward those hidden, forgotten or suppressed histories that so many historians have worked so hard to tell since the cultural turn.
 
 ![Gate at entrance to Cemetery Hill at Clemson University](images/CemeteryHillGate.jpg)
 
-By beginning to understand the social networks created among the faculty and officers who became Woodland plot assignees after the cemetery's creation in 1922 we can take another step in the research of understanding the ties that bind Clemson family to itself and how those networks functioned beyond the university. 
+By beginning to understand the social networks created among the faculty and officers who became Woodland plot assignees after the cemetery's creation in 1922 we can take another step in the research of understanding the ties that bind the Clemson Family to itself, who was excluded from those relationships, and how those networks functioned beyond the university. 
 
 ## History of Woodland Cemetery
 
-Woodland Cemetery, on the campus of Clemson University, was created by President Walter Riggs in 1922. Motivated in part by poor professor retention at Clemson Agricultural College, Riggs devised a plan to use land adjacent to the historic Calhoun family burial plot as a faculty and officer cemetery and their families.
+Woodland Cemetery, on the campus of Clemson University, was envisioned by President Walter Riggs in 1922 and the site of Cemetery Hill adjacent to the Calhoun plot approved by the Board of Trustees in 1923.[^6] Motivated in part by poor professor retention at Clemson Agricultural College, Riggs hoped to pursuade officers and faculty of the school to remain by offering free plots and burials for them and their families.
 
-The growth of Clemson through the 1950s as evidenced by the building of Memorial Stadium directly adjacent to "Cemetery Hill" and numerous other academic, agricultural and administrative buildings across campus directly corresponds to the family plot assignments and burials in the oldest part of Woodland Cemetery. It was also during this time that the notion of the Clemson family begins to rise in popularity among students, alumni and the local press. 
+The growth of Clemson after the American Great Depression of the 1920's through the 1950s as evidenced by the building of Memorial Stadium directly adjacent to Cemetery Hill and numerous other academic, agricultural and administrative buildings across campus directly corresponds to the family plot assignments and burials in the oldest part of Woodland Cemetery.[^7] It was also during this time that the notion of Clemson Family begins to rise in popularity among students, alumni and the local press.[^8] 
 
 In order to explore the notion of Clemson Family, examining its existance and formation as a network of social currency, the eariest families buried in Woodland will be compared to those who lived in campus housing. 
 
 ![1943 Clemson University Atlas](images/1943%20Atlas%20(1).jpg)
 
-The following family names appear on the 1943 Clemson University Atlas:
+The following family names appear on the 1943 Clemson University Atlas provided to me by Rick Owens, Clemson's preservation officer:
 
 - Henry
 - Watkins
@@ -85,16 +85,14 @@ The following family names appear on the 1943 Clemson University Atlas:
 
 - *University buildings (not occupied by families)
 
-The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th, 2025 Rick Owens, Clemson's preservation officer, found a map of Clemson created by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map along with the Clemson Record, Catalog and Announcements for the 1936-1937 academic year are the foundational documents for this project and dataset. The reason for the large discrepancy between the number of names listed on the 1943 map and the 1936 atlas is that the map was printed in Taps and showed a partial map of main campus, according to Rick Owens.
+The 1943 Atlas provided some notion of the correlation between families that lived in university housing and those who chose to be buried at Woodland, but on April 14th, 2025 Mr. Ownes found a map of Clemson drawn by W.M. Simpson and J.R. Cooper believed to have been created in 1936. The key to the map listed over 200 names of individuals living on campus. This map along with the Clemson Record, Catalog and Announcements for the 1936-1937 academic year are the foundational documents for this project and dataset.[^9] According to Mr. Owens, the reason for the large discrepancy between the number of names listed on the 1943 map and the 1936 atlas is that the map was printed in Taps and showes only partial map of main campus.
 
 
 ## Layers of Connections
 
 The dataset for this project began by documenting people that lived in campus housing as evidenced either by the 1936 map or the 1943 atlas. The dataset was then expanded by recording the people that are recorded in the 1936-37 Clemson Record, Catalog and Announcements. The Record provides detailed information about the officers, faculty and other members of Clemson's staff such as which department or office employed them, and where they received their undergraduate and graduate degrees.  
 
-Because it is difficult to find the same inforamtion for each group of people, not every record is as completely populated as it would be in an ideal project. This is especially true for faculty and other university employees that are not buried in Woodland. Because it then becomes necessary to discover where they went, if they left Clemson, and their burial location in order to locate their obituary or other documents that would provide the same information about their social and civil engagement during their time at Clemson it would require research beyond the scope of this project.
-
-To first understand the connects which define the largest groups in the dataset, visualizations of Clemson employees who lived in campus housing as well as those who are interred in Woodland provide the first layer of connection.
+Because it is difficult to find the same amount and type of inforamtion for each group of people, not every record is as completely populated as it would be in an ideal project. This is especially true for faculty and other university employees that are not buried in Woodland. Because it then becomes necessary to discover where they went, if they left Clemson, and their burial location in order to locate their obituary or other documents that would provide the same information about their social and civil engagement during their time at Clemson. This would require research beyond the scope of this project.
 
 Each employee that appears on the 1936 Clemson Map key is connected by their proximity to one another. To live and work with the same group of people heavily shaped their day-to-day lives and interactions with one another. The differentition becomes in what area they worked.
 
@@ -236,8 +234,9 @@ ggplot(clemson_degree_counts, aes(x = has_clemson_degree, y = n, fill = has_clem
   scale_fill_manual(values = c("Yes" = "darkgreen", "No" = "gray70"))
 ```
 
-To understand the value of a Clemson degree for the men that would become members of the faculty and staff the two preceeding visualizations must work in tandem. While those who were deans without Clemson degrees outnumber those with Clemson degrees, at this time Clemson was only awarding bachelors degrees. (footnote: 1936 record) There may be multiple reasons that Clemson graduates were rising to higher ranks in the school namely, the focus on local agriculture as well as the military training. Possibly, the men coming into faculty and staff positions were more quickly adaptable to the systems and structure of Clemosn Agricultural College. Regardless, the tendency to hire and promote Clemson men over their colleges with degrees, and sometimes more advanced degrees, is a strong influencer in the Clemson Family network.
+To understand the value of a Clemson degree for the men that would become members of the faculty and staff the two preceeding visualizations must work in tandem. While those who were deans without Clemson degrees outnumber those with Clemson degrees, at this time Clemson was only awarding bachelors degrees.[^10] There may be multiple reasons that Clemson graduates were rising to higher ranks in the school namely, the focus on local agriculture as well as the military training. Possibly, the men coming into faculty and staff positions were more quickly adaptable to the systems and structure of Clemson Agricultural College. Although this would begin to change under the presidency of E. Walter Sikes, the tendency to hire and promote Clemson men over their colleges with degrees, and sometimes more advanced degrees, is a strong influencer in the Clemson Family network during this period.[^11]
 
+To begin to extract more information from the housing network, clusters around each department show the number of faculty and staff, about which professional information was available, working in each seperate department. Triangle nodes indicate departments while circles indicate people.
 
 ```{r, echo=FALSE}
 
@@ -258,7 +257,7 @@ filtered_nodes_list <- nodes_list %>%
 
 filtered_nodes_list <- as.data.frame(filtered_nodes_list)
 
-str(filtered_nodes_list)
+#str(filtered_nodes_list)
 
 nodes <- filtered_nodes_list %>%
     rename(id = ID) %>%
@@ -307,7 +306,7 @@ visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
            selectionWidth = 36)
 ```
 
-This network is based primarily on the 1936 Record book. It shows the clusters around departments. To futher view their connectedness we add in an additional variable of campus housing.
+To futher view their connectedness the additional variable of campus housing is added. The nodes representing people living on campus are orange, while the others are blue.
 
 ```{r, echo=FALSE}
 #Modify the department visualization to show which people lived in campus housing
@@ -371,7 +370,8 @@ visNetwork(nodes = nodes, edges = edges, height = "650px", width = "1100px") %>%
            selectionWidth = 36)
 ```
 
-The final stage of the visualization indicates people buried at Woodland Cemetery. By adding this variable, change over time becomes visable. For the people who appear in the 1936 Record book as employees, there is often a lapse of 40 - 50 years before their death and internment in Woodland. This life-long commitment to Clemson is a key component of Clemson Family.
+The final stage of the visualization indicates people buried at Woodland Cemetery by changing the shape of their representative nodes to a star. By adding this variable, change over time becomes visable. For the people who appear in the 1936 Record book as employees, there is often a lapse of 40 - 50 years before their death and internment in Woodland. This life-long commitment to Clemson is a key component of Clemson Family.
+
 ```{r, echo=FALSE}
 #Modify the department/campus housing visualization to indicate people buried at Woodland
 nodes_list <- read.csv("ClemsonFamily_files/files/ClemsonFamilyNodesListVer4.csv") 
@@ -442,20 +442,20 @@ The size of each department is indicative of the academic focus of the school du
 
 ![1936 Record Book: Number of Students Majoring in Each Curriculum](images/CAC1936Enrollment.jpeg)
 
-The greatest number of students were majoring in "Engineering Unclas" with the next highest number majoring in Agriculture. The likely reason for the greater number of professor in the Agriculture Department is my decision to classify certain professors as "General Education" when their subject matter seemed likely to be taught across multiple disciplines. For example, a professor of mathematics could have taught in the School of Engineering, but may have also taught in the School of General Science or Architecture. I may be possible to further refine these classifications by examining each individual, or proceeding through the Record, Catalog and Announcement book to discover if certain professors are directly connected to a specific school.
+The greatest number of students were majoring in "Engineering Unclas [Unclassified]" with the next highest number majoring in Agriculture. The likely reason for the greater number of professors in the Agriculture Department can be accounted for by my decision to classify certain professors as "General Education" when their subject matter seemed likely to be taught across multiple disciplines. For example, a professor of mathematics could have taught in the School of Engineering, but may have also taught in the School of General Science or Architecture. It may be possible to further refine these classifications by examining each individual, or proceeding through the Record, Catalog and Announcement book to discover if certain professors are directly connected to a specific school.
 
-The addition of colors indicating whether an employee lived in campus housing or not begins to frame the concept of Clemson Family more discretely. That none of the members of the Board of Trustees or the Alumni Corporation Board of Directors lived in campus housing makes logical sense. As is the case today, the BOT and the Clemson Alumni Associate Board of Directors serve as external bodies of the university. They are typically residents of South Carolina, but rarely live in Clemson and almost always hold jobs outside of the university. These entities, therefore hold a unique role within the Clemson Family.
+The addition of colors indicating whether an employee lived in campus housing or not begins to frame the concept of Clemson Family more discretely. That none of the members of the Board of Trustees or the Alumni Corporation Board of Directors lived in campus housing makes logical sense. As is the case today, the BOT and the Clemson Alumni Associate Board of Directors serve as external bodies of the university. They are typically residents of South Carolina, but rarely live in Clemson and almost always hold jobs outside of the university. These entities, therefore, hold a unique role within the Clemson Family.
 
-Perhaps the most interesting cluster revolves around "Other Officers". These individuals are unqiue in several ways, chiefly because of the percentage of females listed. Also listed are the five campus religious leaders: John K. Goode, Baptist; Donald E. Veale, Episcopla; Sydney J. L. crouch, Presbyterian; Herbert Otto Chamebrs, Methodist; and Henry L. Spiesman, Catholic. **footnote with pg and female breakdown
+Perhaps the most interesting cluster revolves around "Other Officers". These individuals are unqiue in several ways, chiefly because of the percentage of females listed. Also listed are the five campus religious leaders: John K. Goode, Baptist; Donald E. Veale, Episcopla; Sydney J. L. crouch, Presbyterian; Herbert Otto Chamebrs, Methodist; and Henry L. Spiesman, Catholic.[^12]
 
-The most compelling evidence of the formation of Clemson Family and the centrality of Woodland Cemetery to its cohesion is the final visualization which indicates with stars the individuals that chose to be buried in the cemetery. The overwhelming number of stars are orange, meaning that these people had been residents in campus housing while working as facutly and staff in the mid-1930s. To contextualize this in individual lives, examine the years of death. These men and women and their families spent their entire lives on the grounds of Clemson Agricultural College and then chose those grounds as their eternal resting place. ***add hover option to nodes to show death year
+The most compelling evidence of the formation of Clemson Family and the centrality of Woodland Cemetery to its cohesion is the final visualization which indicates with stars the individuals that chose to be buried in the cemetery. The overwhelming number of stars are orange, meaning that these people had been residents in campus housing while working as facutly and staff in the mid-1930s. To contextualize this in individual lives consider that most of these people were interred in the cemetery between the 1950's and 1970's. Dr. Joseph Lindsay, who is listed in the 1936 Record died and was buried at Woodland in 1998. These men and women and their families spent their entire lives on the grounds of Clemson Agricultural College and then chose those same grounds as their eternal resting place.
 
-The tight interwoveness of these lives is visually evident by examining these networks. Men who shared classroom podiums, also shared backyard fences and now lie within yards or even feet of one another. Clemson Family became a physical reality when Walter Riggs conceived of a shared burial ground for those members of the faculty and staff who would remain and serve at Clemson.
+The tight interwoveness of these lives is visually evident by examining these networks. Men who shared classroom podiums, also shared backyard fences and now lie within yards or even feet of one another. Clemson Family became a physical reality when Walter Riggs conceived of a shared burial ground for those members of the faculty and staff who chose to stay and serve at Clemson for the remainder of their careers.
 
 
 ## For Further Research
 
-Other layers of connectedness could be explore, such as individual's involvement in religious, social and civic organizations.
+Other layers of connectedness could be explored, such as individual's involvement in religious, social and civic organizations. The visualization below shows people clustered around the churches of which they were members.
 
 ```{r, echo=FALSE}
 #Create edges list based on church affiliation
@@ -467,20 +467,16 @@ church_edges_list <- church_nodes_list %>%
 #transform edges_list into a data.frame
 church_edges_list <- as.data.frame(church_edges_list)
 
-str(church_edges_list)
-```
+#str(church_edges_list)
 
-```{r, echo=FALSE}
 #filter nodes list
 church_filtered_nodes_list <- church_nodes_list %>%
     filter(!is.na(ChurchMembership) & ChurchMembership != "")
 
 church_filtered_nodes_list <- as.data.frame(church_filtered_nodes_list)
 
-str(church_filtered_nodes_list)
-```
+#str(church_filtered_nodes_list)
 
-```{r, echo=FALSE}
 church_nodes <- church_filtered_nodes_list %>%
     rename(id = ID) %>%
     mutate(label = id)
@@ -513,7 +509,7 @@ if (length(church_missing_nodes) > 0) {
   church_nodes <- bind_rows(church_nodes, church_missing_nodes_df)
 }
 
-print(church_nodes)
+#print(church_nodes)
 
 
 church_nodes <- church_nodes %>%
@@ -528,6 +524,68 @@ visNetwork(nodes = church_nodes, edges = church_edges, height = "650px", width =
            selectionWidth = 36)
 ```
 
-Because the dataset is not as populated in regards to these organizations as compared to university departments, it is less reliable. However, based on known trends that exist even into the present day, more than likely the graph above would simply increase in size, but the 
+Because the dataset is not as completely populated with church data as compared to university departments, it is less reliable. However, based on known trends that exist even into the present day, more than likely the graph above would simply increase in size, but the existing trend of the majority of connections existing within the Presbyterian, Baptist and Methodist churches would persist.[^13]
 
-There are hundreds of additional names listed in the 1936-37 Clemson Record, Catalog and Announcements. Instructors, Agricultural Experiment Station staff, Home Demonstration Agents as well as the black 
+Creating a network model which includes every person buried at Woodland Cemetery would be incredibly useful for the research at Cemetery Hill. Most likely, a temporal network is needed because of the length of time the cemetery has been in operation. The other key connection that this study did not consider is the family connections at Woodland. Spouse, sibling and in-law relationships are important, but what would be perhaps even more telling in understanding the development of Clemson Family, are children and extended family members that married other Clemson faculty children. Those generational trends would serve as key points of connection in the perservation and expansion of the notion of Clemson Family.
+
+Beyond network mapping Woodland Cemetery, there are hundreds of additional names listed in the 1936-37 Clemson Record, Catalog and Announcements to say nothing of the previous and subsequent years of that and other Clemson publications. Mapping those who fall outside of the campus housing and Woodland Cemetery catagories would also reveal an entirely different aspect of what constitutes Clemson Family. 
+
+Others who would have be excluded from the Clemson Family, at least through the integration of Clemson University in 1963 with the admission of Harvey Gantt, would be black employees. There remains some record of their involvement in the 1936-37 Record book, but discovering additional names as well as their religious, civic and social affiliations would help uncover the complex and inequitable community and racial networks that operated at Clemson Agricultural College, in the broader Clemson community and across South Carolina during this era.
+
+In the spirit of Dr. Thomas' "Call My Name" project, I've listed below the names of the black Agricultural Agents and Home Demonstration Agents as they appear in the 1936-37 Record, Catalog and Announcement book:
+
+#### Agricultural Agents
+- H. E. Daniels, District Agent, State College, Orangeburg
+- Paul R. Webber, Jr., Aiken
+- J. A. Gresham, Anderson
+- J. D. Marshall, Bamberg
+- Benjamin Barnwell, Beaufort
+- Waymon Johnson, Chester
+- Wm. Thompson, Clarendon
+- H. C. Miller, Colleton
+- H. S. Person, Florence
+- Booker T. Miller, Greenville
+- L. V. Walker, Greenwood
+- G. W. Daniels, Orangeburg
+- J. E. Dickson, Richland
+- W. C. Bunch, Spartanburg
+- Jason Maloney, Sumter
+- E. N. Williams, Union
+- Van Buren Thomas, Williamsburg
+
+### Home Demonstration Agents
+- Marian B. Paul, State Supervisor, State College, Orangeburg
+- Matred McKissick, Aiken
+- Rosa B. Reed, Allendale
+- Willie Mabel Price, Beaufort
+- Albertha DeVeaux, Charleston
+- Mattie E. Overstreet, Dorchester
+- Lillian Brown, Florence
+- Rosa G. Gadsden, Georgetown
+- Dephenia Wilkerson, Greenville
+- Minnie Gandy, Marlboro
+- Marie A. Burch, Orangeburg
+- Frances Thomas, Richland
+- Elouise Williams, Asst. Agent, Richland
+- Virginia W. Whittington, Spartanburg
+- Ophelia Williams, Sumter
+
+## Conclusion
+
+The notion of Clemson Family as it exists today comprises of generations of alumni, athletics fans and other people associated with Clemson University. By building a network of most of the original faculty and officers who were assigned plots at Woodland Cemetery and were subsequently buried there, the strands of these early connections begin to be visible. By continuing this research, the lives which are less documented, such as the wives of faculty members, will be given weight within the connectedness of the Clemson Family. The eventual goal of mapping the networks of those whose strands were lightly connected or entirely disconnected to Clemson University in an offical way, whether by their own choice or the dictates others, will also illumiate the functionality of this network. Clemson Family traces part of its origin back to President Riggs and his conception of Woodland Cemetery and has grown to encompass thousands of people across the globe. Network analysis allows a tangible visualization of the expansion and exculsions of this important social function within the university.
+
+
+## Footnotes
+[^1]: Joseph Anthony Amato, *Rethinking Home : A Case for Writing Local History*. (Berkeley: University of California Press, 2002), https://doi.org/10.1525/9780520936331.
+[^2]:  Ibid., 187.
+[^3]: Jerome V. Reel, *The High Seminar*y*. (Clemson, SC: Clemson University Digital Press, 2011).
+[^4]: Other less scholarly, but fascinating histories of Clemson include Wright Bryan, *Clemson: An Informal History of the University, 1889-1979*, 1979; Arthur V. Williams, *Tales of Clemson, 1936-1940*, 2002; Mary Katherine Littlejohn, *Tales of Tigertown: Anecdotes of a Lifetime on the Clemson Campus*, 1979; Frank Mellette, *Old Clemson College - It was a Hell of a Place*, 1981.
+[^5]: Rhondda Robinson Thomas, *Call My Name, Clemson : Documenting the Black Experience in an American University Community* (Iowa City: University of Iowa Press, 2020), https://ebookcentral.proquest.com/lib/clemson/reader.action?docID=6364066&c=RVBVQg&ppg=1. Rhondda Robinson Thomas, ed, *Rhetoric, Public Memory, and Campus History* (Clemson, SC: Clemson University Press, 2022), https://doi.org/10.3828/liverpool/9781638040200.001.0001.
+[^6]: https://www.clemson.edu/about/history/woodland-cemetery/histories/timeline.html
+[^7]: Reel's *High Seminary* chronicles this growth and attributes most of it to President E. Walter Sikes. Under Sikes the school was reorganized, the number of faculty holding PhDs doubled and a massive building program was accomplished. Reel, *High Seminary*, 236-256.
+[^8]: Beginning the late 1920's there is a rise in newspaper articles that refer to the "Clemson Family" in a context apart from the Thomas Green Clemson family. Some examples include a 1946 article reporting on the number of veterans returning to Clemson the prediction that diapers will soon "flutter with Clemson family wash" and a 1848 article that refers to an "official member of the Clemson family" who was displeased with the local press' reporting of the Clemson football team over Wake Forest. The article later describes this person as a Clemson booster. "Diapers Flutter with Clemson Family Wash," *The Herald*, May 2, 1946, https://www.newspapers.com/image/755181806/?match=1&terms=clemson%20family&clipping_id=166813566. "Caro-Lines," *The Times and Democrat*, November 17, 1948, https://www.newspapers.com/image/344538018/?match=1&terms=clemson%20family&clipping_id=166814117.
+[^9]: *Record ... Catalog ... Announcements : 1936/37-1938/39* (Clemson: South Carolina, Clemson Agricultural College, 1938), https://babel.hathitrust.org/cgi/pt?id=uiug.30112111483894&seq=7.
+[^10]: *Record*, 58-61.
+[^11]: Reed, *High Seminary*, 243-5.
+[^12]: *Record*, 18. Eleven of the twenty-nine individuals listed as "Other Officers" are female. As far as I am able to tell, only one of the females was the wife of a Clemson employee. The rest were single, but sometimes daughters of Clemson faculty members. This is a noteworthy line of research that should be followed and has the potential to unlock a very unique aspect of Clemson Family.
+[^13]: Reel provides more information about the make up the student body and faculty and their religious affiliations. Reel, *High Seminary*, 266-7, 331-2, 391-2
