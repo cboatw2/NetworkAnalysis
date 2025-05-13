@@ -3,31 +3,29 @@ title: "Collini Code Review"
 format: html
 ---
 
+### Assignment:
 Work with Dr. Collini’s network graph. Look at the node and edge list. Look at
 the code and run each line. Comment the script so that you know what each
 part does. Write a review of this code. What sources does it rely on, what
 choices does it make, and how do those things shape the argument being
 made by the visualization? What are its strengths and weaknesses?
 
-Dr. Collini's network visualziation of the familial relationships of the people enslaved at various properties owned by George Washington is a clear 
+### Code review:
 
-While the decision to 
----
-output: html_document
----
-<style type="text/css">
-h6 { /* Header 6 */
- font-size: 10px;
- color: black;
- text-align: center
-}
-</style>
+Dr. Collini's network visualziation shows the familial relationships of the people enslaved at various properties owned by George Washington. Because her full project is currently in re-design on her website I am relying on her code as well as conversations I have had with her and viewing the projects in the past. The network shows the the tension between agency and dependence that existed for enslaved families at Mount Vernon. Familial connections existed and persisted among Mount Vernon's enslaved population despite being physically separated by their enslavers. By adding locations as nodes in the graph it allows for a digital representation of the physical distance imposed by the system of enslavement on these families.
+
+While the decision to represent people as nodes is sometimes debated in digital humanities, I think in this instance it is effective given the spatial underpinnings of the project. The database is built from the Mount Vernon Slavery Database. Normally, original research would be desireable for database creation, but since Dr. Collini worked at Mount Vernon, her deep knowledge of the sources behind this database certainly qualifies her to create a subset for her project.
+
+Any time family and social networks for enslaved people are able to be created it pushes our understanding and southern history forward by increasing broadening the conception of their individual experiences within the system of slavery. Dr. Collini's network serves antebellum scholars well both in its argument and structure as well as an template for building network visualizations of other communities.
 
 ### Social Network of Enslaved Community at Mount Vernon, 1754-1799
 
 This visualization is a social network of 517 enslaved people at Mount Vernon or linked to the estate from 1754 to 1799. Each icon (node) represents one individual, and the connections (edges) between icons indicate known family relationships, such as children, spouses, and siblings. Those people alive in 1799 and documented on George Washington's 1799 census are color-coded by farm, with yellow icons representing people who lived outside of Mount Vernon. Gray icons represent people who were either deceased, sold, or had run away by 1799. Because multiple people had the same name, the capital letter following each first name functions only as a distinguisher. It does not represent the last name of the individual.  
 
 To use this visualization, select the name of a person from the "Select by id" menu. The names of people featured in the <a href="http://www.mountvernon.org/plan-your-visit/calendar/exhibitions/lives-bound-together-slavery-at-george-washingtons-mount-vernon/" target="blank">Lives Bound Together: Slavery at George Washington's Mount Vernon" exhibit</a> are in uppercase. Select a farm to highlight from the "Select by location" menu. Zoom out to see the overall network and zoom in to focus on one person or family group. Click on each person to reveal their primary kinship connections and drag the nodes to explore each family group. Refresh the page to display the original graph. To learn more about these individuals, explore the <a href="http://www.mountvernon.org/george-washington/slavery/slavery-database/" target="blank">Mount Vernon Slavery Database</a>.
+
+
+### Commented code:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE) #sets global parameters for each code chunk; Knitr will treat each option that you pass to knitr::opts_chunk$set as a global default that can be overwritten in individual chunk headers. from: https://rmarkdown.rstudio.com/lesson-3.html
